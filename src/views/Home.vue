@@ -90,6 +90,12 @@
   </div>
 
   <div class="box">
+    <div class="content">
+      <TestD3></TestD3>
+    </div>
+  </div>
+
+  <div class="box">
     <div class="header">
       debug
     </div>
@@ -101,11 +107,13 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, reactive, Ref, ref} from 'vue';
+import {defineComponent, reactive} from 'vue';
+import TestD3 from '@/components/TestD3.vue'
 
 export default defineComponent({
   name: 'Home',
   components: {
+    TestD3
   },
   props: {
   },

@@ -91,7 +91,7 @@
 
   <div class="box">
     <div class="content">
-      <TestD3></TestD3>
+      <TestC3></TestC3>
     </div>
   </div>
 
@@ -108,12 +108,12 @@
 
 <script lang="ts">
 import {defineComponent, reactive} from 'vue';
-import TestD3 from '@/components/TestD3.vue'
+import TestC3 from '@/components/TestC3.vue'
 
 export default defineComponent({
   name: 'Home',
   components: {
-    TestD3
+    TestC3
   },
   props: {
   },

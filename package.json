@@ -5,9 +5,11 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "deploy": "npm run build && scp -r dist/* root@212.47.245.165:/opt/www"
+    "deploy": "npm run build && scp -r dist/* root@212.47.245.165:/var/www/html"
   },
   "dependencies": {
+    "@types/c3": "^0.7.6",
+    "c3": "^0.7.20",
     "chart.js": "^3.6.1",
     "core-js": "^3.6.5",
     "d3": "^7.1.1",

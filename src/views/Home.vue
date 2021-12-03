@@ -65,6 +65,20 @@
 
   <div class="box">
     <div class="header">
+      Scénarios
+    </div>
+    <div class="content">
+      <div class="lane">
+        <va-button-group>
+          <va-button v-for="scenari in scenarios"> {{ scenari.nom }}</va-button>
+        </va-button-group>
+        <va-button @click="pushNewScenario()" :disabled="scenarios.length > 4" icon="add_circle_outline"></va-button>
+      </div>
+    </div>
+  </div>
+
+  <div class="box">
+    <div class="header">
       debug
     </div>
     <div class="content">
@@ -85,15 +99,29 @@ export default defineComponent({
   },
   setup: () => {
 
+    type Scenari ={ nom: string};
+
     const sols = [...Array(3).keys()].map( v => "sol_"+v);
     const cultures = [...Array(3).keys()].map( v => "culture_"+v);
 
     const formValues = reactive({});
+    const scenarios = reactive([] as Scenari[]);
+
+    const pushNewScenario = () => {
+      scenarios.push({
+        nom: "Scenario "+scenarios.length
+      });
+    }
+
+    // init first scenari
+    pushNewScenario();
 
     return {
       formValues,
+      scenarios,
       sols,
-      cultures
+      cultures,
+      pushNewScenario
     }
   }
 });

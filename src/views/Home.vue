@@ -65,14 +65,26 @@
 
   <div class="box">
     <div class="header">
-      Scénarios
+      Scénarios <va-button @click="pushNewScenario()" :disabled="scenarios.length > 4" icon="add_circle_outline"></va-button>
     </div>
     <div class="content">
       <div class="lane">
-        <va-button-group>
-          <va-button v-for="scenari in scenarios"> {{ scenari.nom }}</va-button>
+        <va-button-group outline>
+          <va-button v-for="scenari in scenarios" @click="formValues.selectedScenario = scenari"> {{ scenari.nom }}</va-button>
         </va-button-group>
-        <va-button @click="pushNewScenario()" :disabled="scenarios.length > 4" icon="add_circle_outline"></va-button>
+      </div>
+
+      <div class="lane">
+        <div>
+          <label for="alea">Aléa</label>
+          <va-select id="alea" v-model="formValues.selectedScenario.alea"  :options="aleas" />
+        </div>
+      </div>
+      <div class="lane">
+        <div>
+          <label for="periode">Période</label>
+          <va-date-picker id="periode" mode="range" v-model="formValues.selectedScenario.periode" />
+        </div>
       </div>
     </div>
   </div>
@@ -89,7 +101,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue';
+import {defineComponent, reactive, Ref, ref} from 'vue';
 
 export default defineComponent({
   name: 'Home',
@@ -101,25 +113,29 @@ export default defineComponent({
 
     type Scenari ={ nom: string};
 
-    const sols = [...Array(3).keys()].map( v => "sol_"+v);
-    const cultures = [...Array(3).keys()].map( v => "culture_"+v);
+    const sols = [...Array(3).keys()].map( v => `sol_${v+1}`);
+    const cultures = [...Array(3).keys()].map( v => `culture_${v+1}`);
+    const aleas = [...Array(3).keys()].map( v => `alea_${v+1}`);
 
-    const formValues = reactive({});
+    const formValues = reactive({} as any);
     const scenarios = reactive([] as Scenari[]);
+
 
     const pushNewScenario = () => {
       scenarios.push({
-        nom: "Scenario "+scenarios.length
+        nom: `Scénario ${scenarios.length+1}`
       });
     }
 
     // init first scenari
     pushNewScenario();
+    formValues.selectedScenario = scenarios[0];
 
     return {
       formValues,
       scenarios,
       sols,
+      aleas,
       cultures,
       pushNewScenario
     }

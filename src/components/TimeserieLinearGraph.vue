@@ -21,9 +21,15 @@ export default defineComponent({
     xName: {
       type: String,
       default: "date"
+    },
+    grid: {
+      type: Object as PropType<any>
+    },
+    regions: {
+      type: Object as PropType<any[]>
     }
   },
-  setup: ({id, data , xName}) => {
+  setup: ({id, data , xName, grid, regions}) => {
 
     console.log("data", (data as any)[0]);
     console.log("id", id);
@@ -38,7 +44,7 @@ export default defineComponent({
         data: {
           x: xName,
           columns: data,
-          
+
         },
         axis: {
           x: {
@@ -48,10 +54,12 @@ export default defineComponent({
             }
           }
         },
+        grid: grid,
+        regions: regions,
         point: {
           show: false
         }
-        
+
       }
     );
   })
@@ -59,3 +67,17 @@ export default defineComponent({
 });
 
 </script>
+
+<style lang="scss">
+  .Sécheresse {
+    fill: #ff0000 !important;
+  }
+
+  .c3-grid-lines {
+    text {
+      fill: #252525 !important;
+      font: 15px Avenir !important;
+      font-weight: bold !important;
+    }
+  }
+</style>

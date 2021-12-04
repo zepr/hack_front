@@ -45,6 +45,11 @@ export default defineComponent({
               lines: [
                   {value: '2014-01-01' , text: 'Gel'}
               ]
+          },
+          y: {
+            lines: [
+              {value:800, text: 'test'}
+            ]
           }
 
         },

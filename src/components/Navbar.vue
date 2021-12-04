@@ -1,6 +1,6 @@
 <template>
-  <div class="container">
-    <img src="@/assets/hackathon_varenne.jpg" />
+  <div class="container shadowed">
+    <img src="@/assets/hackathon_varenne.jpg"/>
     <div class="hero-title">
       <h1 class="shadow">
       <span>C</span><span>L</span><span>I</span><span>M</span><span>A</span><span>T</span><span>I</span><span>P</span><span>S</span>
@@ -10,6 +10,10 @@
 
 <style lang="scss">
 
+
+.container{
+  background-color: #737373a3;
+}
 
 .shadow {
   font-family: "Be Vietnam Pro", sans-serif;

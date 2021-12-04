@@ -113,8 +113,8 @@
               </template>
             </va-slider>
 
-            
-            
+
+
 
           </div>
           <div class="lane" style="height: 150px;">
@@ -268,6 +268,8 @@
             :data="matiereSecheSimulationScenarioPlusTheorique"
             id="matiereSecheSimulation"
             :x-name="date"
+            :grid="gridMatiereSecheSimulationScenarioPlusTheorique"
+            :regions="regionsMatiereSecheSimulationScenarioPlusTheorique"
         ></TimeserieLinearGraph>
       </div>
       <div class="lane">
@@ -299,10 +301,10 @@
       debug
     </div>
     <div class="content">
-      {{ formValues }}
+      {{ regionsMatiereSecheSimulationScenarioPlusTheorique }}
     </div>
     <div class="content">
-      {{ scenarios }}
+      {{ gridMatiereSecheSimulationScenarioPlusTheorique }}
     </div>
   </div>
 
@@ -368,7 +370,7 @@ export default defineComponent({
       tempOptimale: {min: 10, max: 15, default: 30},
       prixDeVente: {min: 5, max: 13, default: 20},
       coutAssurance: {min: 1000, max: 1500, default: 2000},
-      annee: {min:2011, max:2050, default:2014}
+      annee: {min:2011, max:2050, default:2023}
     };
 
 
@@ -382,8 +384,8 @@ export default defineComponent({
     const defaultScenarios: Scenari[] = [
         { "nom": "Scénario 1",
           "aleas": [
-            { "type": "Grèle", "intensite": 1 , periode: { start: new Date() }},
-            { "type": "Sécheresse", "intensite": 0 , periode: { start: new Date(), end: new Date() } }
+            { "type": "Grèle", "intensite": 1 , periode: { start: new Date(2023,5,5) }},
+            { "type": "Sécheresse", "intensite": 0 , periode: { start: new Date(2023,7,5), end: new Date(2023,7,29) } }
           ]
         }
     ];
@@ -451,14 +453,36 @@ export default defineComponent({
       matiereSecheSimulationScenarioPlusTheorique.value = [dataSimulationScenario.value["date"], renamedDataSimulationScenario, dataSimulationTheorique.value["matiereSeche"]];
 
       maxRendementSimulationScenario.value = Math.max(...(dataSimulationScenario.value["rendement"].slice(1)));
-
     };
     querySimulationTheorique()
         .then( () => {
       querySimulationScenario();
     });
 
+    const gridMatiereSecheSimulationScenarioPlusTheorique = ref({
+      x: {},
+      y: {}
+    } as any);
+    const regionsMatiereSecheSimulationScenarioPlusTheorique = ref([] as any[]);
+    const computeAleaChart =  (scenario: Scenari) => {
 
+      scenario.aleas.forEach( alea => {
+        if ( alea.periode?.start ){
+            gridMatiereSecheSimulationScenarioPlusTheorique.value.x.lines = gridMatiereSecheSimulationScenarioPlusTheorique.value.x.lines || [];
+          gridMatiereSecheSimulationScenarioPlusTheorique.value.x.lines.push(
+              {value: dateService.formatToIsoLocalDate(alea.periode.start), text: alea.type}
+          );
+          if ( alea.periode.end ) {
+            regionsMatiereSecheSimulationScenarioPlusTheorique.value.push({
+              start: dateService.formatToIsoLocalDate(alea.periode.start),
+              end: dateService.formatToIsoLocalDate(alea.periode.end),
+              class: alea.type
+            });
+          }
+        }
+      })
+    };
+    scenarios.forEach(scenari => computeAleaChart(scenari as Scenari));
 
     return {
       configRanges,
@@ -478,7 +502,9 @@ export default defineComponent({
       rendementSimulationTheorique,
       matiereSecheSimulationScenarioPlusTheorique,
       maxRendementSimulationScenario,
-      maxRendementSimulationTheorique
+      maxRendementSimulationTheorique,
+      regionsMatiereSecheSimulationScenarioPlusTheorique,
+      gridMatiereSecheSimulationScenarioPlusTheorique
     }
   }
 });

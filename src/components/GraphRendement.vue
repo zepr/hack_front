@@ -2,7 +2,7 @@
 
 <template>
   Affichage du tableau
-  <div id="chart"></div>
+  <div id="chartRendement"></div>
 </template>
 
 <script lang="ts">
@@ -16,30 +16,30 @@ export default defineComponent({
   setup: () => {
 
 
-    onMounted( () => {
+    onMounted(() => {
       var chart = c3.generate({
-        bindto: '#chart',
+        bindto: '#chartRendement',
         data: {
-            x:'Scénario',
-            columns: [
-                ['Scénario', 'Optimal', 'Scénario 1', 'Scénario 2'],
-                ['Optimal', 30, 200, 100, 400, 150, 250],
-                ['Scénario 1', 130, 100, 140, 200, 150, 50],
-                ['Scénario 1', 130, 100, 140, 200, 150, 50]
-            ],
-            type: 'bar'
+          x: 'Scénario',
+          columns: [
+            ['Scénario', 'Optimal', 'Scénario 1', 'Scénario 2'],
+            ['Optimal', 30, 200, 100, 400, 150, 250],
+            ['Scénario 1', 130, 100, 140, 200, 150, 50],
+            ['Scénario 1', 130, 100, 140, 200, 150, 50]
+          ],
+          type: 'bar'
         },
         bar: {
-            width: {
-                ratio: 0.5 // this makes bar width 50% of length between ticks
-            }
+          width: {
+            ratio: 0.5 // this makes bar width 50% of length between ticks
+          }
         }
-    
-        }),
-    
-  })
 
+      });
 
+    });
+  }
+});
 
 
 </script>

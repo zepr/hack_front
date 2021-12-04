@@ -91,7 +91,7 @@
 
   <div class="box">
     <div class="content">
-      <TestC3></TestC3>
+      <GraphBiomasse></GraphBiomasse>
     </div>
   </div>
 
@@ -122,12 +122,14 @@
 <script lang="ts">
 import {defineComponent, reactive} from 'vue';
 import GraphRendement from '@/components/GraphRendement.vue'
-import GrapheMarge from '@/components/GraphMarge.vue'
+import GraphMarge from '@/components/GraphMarge.vue'
+import GraphBiomasse from '@/components/GraphBiomasse.vue'
 export default defineComponent({
   name: 'Home',
   components: {
+    GraphBiomasse,
     GraphRendement,
-    GrapheMarge
+    GraphMarge
   },
   props: {
   },

@@ -2,7 +2,7 @@
 
 <template>
   Affichage du tableau
-  <div id="chart"></div>
+  <div id="chartMarge"></div>
 </template>
 
 <script lang="ts">
@@ -12,13 +12,13 @@ import {defineComponent, onMounted} from 'vue';
 import * as c3 from "c3";
 
 export default defineComponent({
-  name: "GraphRendement",
+  name: "GraphMarge",
   setup: () => {
 
 
     onMounted( () => {
       var chart = c3.generate({
-        bindto: '#chart',
+        bindto: '#chartMarge',
         data: {
           x:'date',
           columns: [
@@ -34,7 +34,7 @@ export default defineComponent({
                 format:(x:any) => `${x.getDate()}/${x.getMonth()+1}/${x.getFullYear()}`
               }
           }
-          
+
         },
         grid: { // Représenter les axes des épisodes ponctuels
           x: {
@@ -42,14 +42,14 @@ export default defineComponent({
                   {value: '2014-01-10' , text: 'Gel'}
               ]
           }
-             
-        }, 
+
+        },
         regions: [ // Représenter les plages des épisodes étendus
             {start: '2014-01-05', end: '2014-01-10'},
-            
-        ]        
+
+        ]
       },
-      
+
     );
   })
 }

@@ -161,17 +161,30 @@
 
 
       </div> <!-- FIN LIGNE CONTENANT DONNEES PLANTE ET SOL/COUTS-->
-
-
-
-
-
     </div>
   </div> <!-- Fin de la page-->
 
   <div class="box" id="projectionTheorique">
     <div class="header">
       Projection Théorique
+    </div>
+    <div class="content">
+      <div class="lane">
+        <TimeserieLinearGraph
+            v-if="matiereSecheSimulationTheorique.length >= 2"
+            :data="matiereSecheSimulationTheorique"
+            id="matiereSeche"
+            :x-name="date"
+          ></TimeserieLinearGraph>
+      </div>
+      <div class="lane">
+        <TimeserieLinearGraph
+            v-if="rendementSimulationTheorique.length >= 2"
+            :data="rendementSimulationTheorique"
+            id="rendement"
+            :x-name="date"
+        ></TimeserieLinearGraph>
+      </div>
     </div>
   </div>
 
@@ -271,6 +284,18 @@
     <div class="header">
       Simulation Scénario
     </div>
+    <div class="content">
+      <div class="lane">
+        <TimeserieLinearGraph
+            v-if="matiereSecheSimulationScenarioPlusTheorique.length >= 3"
+            :data="matiereSecheSimulationScenarioPlusTheorique"
+            id="matiereSecheSimulation"
+            :x-name="date"
+        ></TimeserieLinearGraph>
+      </div>
+      <div class="lane">
+      </div>
+    </div>
   </div>
 
   <div class="box">
@@ -307,17 +332,19 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, reactive, ref, Ref} from 'vue';
+import {computed, defineComponent, reactive, ref, Ref} from 'vue';
 import GraphRendement from '@/components/GraphRendement.vue'
 import GraphMarge from '@/components/GraphMarge.vue'
 import GraphBiomasse from '@/components/GraphBiomasse.vue'
 import GraphProba from'@/components/GraphProba.vue'
 import { useDateService } from "@/services/date.service";
 import {useApiService} from "@/services/api.service";
+import TimeserieLinearGraph from "@/components/TimeserieLinearGraph.vue";
 
 export default defineComponent({
   name: 'Home',
   components: {
+    TimeserieLinearGraph,
     GraphBiomasse,
     GraphRendement,
     GraphMarge,
@@ -369,7 +396,7 @@ export default defineComponent({
 
 
     /* init with default values ! */
-    const defaultFormValues: any = {lieu: 'Adriers (86001)'};
+    const defaultFormValues: any = {lieu: 'Genneton (79132)'};
 
     Object.entries(configRanges).forEach( entry => {
       defaultFormValues[entry[0]] = entry[1].default
@@ -413,6 +440,49 @@ export default defineComponent({
       optionsLieux.value = await apiService.findVille(criteria);
     }
 
+    // THEORIQUE
+    const dataSimulationTheorique = ref({} as any);
+    const matiereSecheSimulationTheorique =  ref([] as any[]);
+    const rendementSimulationTheorique =  ref([] as any[]);
+    const maxRendementSimulationTheorique = ref(0);
+    const querySimulationTheorique = async () => {
+      const startDate = new Date(formValues.annee, 0, 1);
+      const rawSimulationData = await  apiService.getDatedRendement(startDate);
+      const flattenedChartData = apiService.flattenAsChartData(rawSimulationData);
+      flattenedChartData.forEach( data => dataSimulationTheorique.value[data[0]] = data);
+
+
+      matiereSecheSimulationTheorique.value = [dataSimulationTheorique.value["date"], dataSimulationTheorique.value["matiereSecheTheorique"]];
+
+      rendementSimulationTheorique.value = [dataSimulationTheorique.value["date"], dataSimulationTheorique.value["rendement"]];
+
+      maxRendementSimulationTheorique.value = Math.max(...(dataSimulationTheorique.value["rendement"].slice(1)));
+    };
+
+
+    // SIMULATION
+    const dataSimulationScenario = ref({} as any);
+    const maxRendementSimulationScenario = ref(0);
+    const matiereSecheSimulationScenarioPlusTheorique =  ref([] as any[]);
+    const querySimulationScenario = async () => {
+      const startDate = new Date(formValues.annee, 0, 1);
+      const rawSimulationData = await apiService.getDatedRendement(startDate);
+      const flattenedChartData = apiService.flattenAsChartData(rawSimulationData);
+      flattenedChartData.forEach( data => dataSimulationScenario.value[data[0]] = data);
+
+      const renamedDataSimulationScenario = ["matiereSecheScenario",...dataSimulationScenario.value["matiereSecheTheorique"].slice(1)];
+      matiereSecheSimulationScenarioPlusTheorique.value = [dataSimulationScenario.value["date"], renamedDataSimulationScenario, dataSimulationTheorique.value["matiereSecheTheorique"]];
+
+      maxRendementSimulationScenario.value = Math.max(...(dataSimulationScenario.value["rendement"].slice(1)));
+
+    };
+    querySimulationTheorique()
+        .then( () => {
+      querySimulationScenario();
+    });
+
+
+
     return {
       configRanges,
       formValues,
@@ -426,7 +496,12 @@ export default defineComponent({
       selectedAlea,
       dateService,
       optionsLieux,
-      searchOptionsLieux
+      searchOptionsLieux,
+      matiereSecheSimulationTheorique,
+      rendementSimulationTheorique,
+      matiereSecheSimulationScenarioPlusTheorique,
+      maxRendementSimulationScenario,
+      maxRendementSimulationTheorique
     }
   }
 });

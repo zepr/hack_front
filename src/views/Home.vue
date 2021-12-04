@@ -132,29 +132,7 @@
                 track-label-visible
             />
           </div>
-          <div class="lane"> <!--PARTIE PRIX-->
-            Informations financières
-          </div>
-          <div class="lane">
-
-            <label for="prixDeVente">Prix de vente (€/t)</label>
-            <va-input
-                v-model="formValues.prixDeVente"
-                type="number"
-                class="m-4"
-                id="prixDeVente"
-                placeholder="100"
-            />
-          </div>
-          <div class="lane">
-            <label for="coutAssurance">Coût assurance (€/an)</label>
-            <va-input
-                v-model="formValues.coutAssurance"
-                type="number"
-                class="m-4"
-                id="coutAssurance"
-                placeholder="100"
-            />
+          
           </div>
 
         </div> <!-- FIN COLONNE CONTENANT DONNEES SOL et COUTS-->
@@ -162,7 +140,7 @@
 
       </div> <!-- FIN LIGNE CONTENANT DONNEES PLANTE ET SOL/COUTS-->
     </div>
-  </div> <!-- Fin de la page-->
+   <!-- Fin de la page-->
 
   <div class="box" id="projectionTheorique">
     <div class="header">

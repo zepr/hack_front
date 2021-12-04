@@ -1,10 +1,10 @@
 <!--Graph Proba-->
-<!--Peut-être problèmes pour les imports-->
 
 
 <template>
-  Probabilité des aléas
-  <div id="chart"></div>
+Probabilité des aléas
+<div id="chartgraphProba"></div>
+
 </template>
 
 <script lang="ts">
@@ -21,7 +21,7 @@ export default defineComponent({
 
     onMounted( () => {
       var chart = c3.generate({
-        bindto: '#chart',
+        bindto: '#chartgraphProba',
         data: {
           x:'date',
           columns: [
@@ -33,10 +33,9 @@ export default defineComponent({
           x: {
               type: 'timeseries',
               tick: {
-                format:(x:any) => `${x.getDate()}/${x.getMonth()+1}/${x.getFullYear()}`
+                  format: '%Y-%m-%d'
               }
           }
-          
         },
         grid: { // Représenter le seuil de probabilité
           y: {

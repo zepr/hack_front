@@ -8,7 +8,9 @@
     "deploy": "npm run build && scp -r dist/* root@212.47.245.165:/var/www/html"
   },
   "dependencies": {
+    "@types/axios": "^0.14.0",
     "@types/c3": "^0.7.6",
+    "axios": "^0.24.0",
     "c3": "^0.7.20",
     "chart.js": "^3.6.1",
     "core-js": "^3.6.5",

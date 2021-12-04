@@ -51,12 +51,16 @@ body {
     margin-bottom: 30px
   }
 
+
   .lane {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    margin-bottom: 30px;
-  }
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin-bottom: 30px;
+      .va-slider {
+        width: 100px;
+      }
+    }
 
 }
 

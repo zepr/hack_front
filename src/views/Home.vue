@@ -39,7 +39,6 @@
               v-model="formValues.annee"
               id="année"
               type="number"
-              placeholder="2022"
           />
         </div>
       </div>
@@ -80,24 +79,26 @@
                 placeholder="42"
             />
           </div>
-          <div class="lane">
-            <label for="tempMax">Temperature maximale plant (°C)</label>
-            <va-input
+          <div class="lane"> 
+            <div>
+              <label for="tempMax">Temperature maximale plant (°C)</label>
+              <va-slider 
                 v-model="formValues.tempMax"
-                type="number"
-                class="m-4"
-                id="tempMax"
-                placeholder="40"
-            />
+                color="#e34a4a"
+                :min="configRanges.tempMax.min"
+                :max="configRanges.tempMax.max"
+                track-label-visible
+                />
+            </div>
           </div>
           <div class="lane">
             <label for="tempOptimale">Temperature optimale plant (°C)</label>
-            <va-input
-                v-model="formValues.tempOptimale"
-                type="number"
-                class="m-4"
-                id="tempOptimale"
-                placeholder="15"
+            <va-slider
+              v-model="formValues.tempOptimale"
+              color="warning"
+              :min="configRanges.tempOptimale.min"
+              :max="configRanges.tempOptimale.max"
+              track-label-visible
             />
           </div>
 
@@ -107,24 +108,28 @@
           <div class="lane">
             Données sol
           </div>
-          <div class="lane">
+          <div class="lane" style="height: 50px;">
             <label for="epSol">Epaisseur de sol C0 (mm) - min:{{ configRanges.epSol.min}} - max:{{ configRanges.epSol.max}}</label>
-            <va-input
+
+            <va-slider 
                 v-model="formValues.epSol"
-                type="number"
-                class="m-4"
-                id="epSol"
-                placeholder="300"
+                vertical
+                color="#976318"
+                :min="configRanges.epSol.min"
+                :max="configRanges.epSol.max"
+                track-label-visible
             />
+
           </div>
-          <div class="lane">
+          <div class="lane" style="height: 50px;">
             <label for="reserveUtileEau">Réserve utile en eau Maximum (mm)</label>
-            <va-input
+            <va-slider 
                 v-model="formValues.reserveUtileEau"
-                type="number"
-                class="m-4"
-                id="reserveUtileEau"
-                placeholder="100"
+                vertical
+                color="#181C97"
+                :min="configRanges.reserveUtileEau.min"
+                :max="configRanges.reserveUtileEau.max"
+                track-label-visible
             />
           </div>
           <div class="lane"> <!--PARTIE PRIX-->
@@ -335,6 +340,10 @@ export default defineComponent({
       'Sécheresse': { icon: 'local_fire_department', color:'#ec660e'},
       'Thermique': { icon: 'thermostat', color: '#d50f0f'},
       'Grèle': { icon: 'grain', color: '#7fdbff'},
+    };
+
+    const ConfigIcones = {
+      'Culture':{icon:'plant', color:'#3F9634'},
     };
 
     const intensiteTypes = [

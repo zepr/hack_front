@@ -8,14 +8,18 @@
     <div class="content">
       <div class="lane">
         <div>
-          <label for="lieu">Lieu</label>
-          <va-input
-              class="m-4"
-              v-model="formValues.lieu"
+          <label for="lieu">Commune (Vienne et Deux-Sèvres)</label>
+          <va-select
               id="lieu"
-              placeholder="PRA"
+              @update-search="searchOptionsLieux"
+              :options="optionsLieux"
+              v-model="formValues.lieu"
+              no-options-text="Pas de correspondance trouvée"
+              searchable
           />
         </div>
+
+
         <div>
           <label for="surface">Surface (HA)</label>
           <va-input
@@ -185,14 +189,30 @@
               <slot>
                 <div class="lane">
                   <div>
-                    <label for="alea">Aléa</label>
-                    <va-select id="alea" v-model="selectedAlea.type"  :options="aleaTypes" />
+                    <label for="aleaType">Aléa</label>
+                    <va-option-list
+                        id="aleaType"
+                        type="radio"
+                        :options="aleaTypes"
+                        v-model="selectedAlea.type"
+                    />
+                  </div>
+                </div>
+                <div class="lane">
+                  <div>
+                    <label for="aleaIntensity">Intensité</label>
+                    <va-slider id="aleaIntensity"
+                               :label="intensiteTypes[selectedAlea.intensite].label"
+                               :label-color="intensiteTypes[selectedAlea.intensite].color"
+                               :color="intensiteTypes[selectedAlea.intensite].color"
+                               v-model="selectedAlea.intensite"
+                               min="0" max="2" />
                   </div>
                 </div>
                 <div class="lane">
                   <div>
                     <label for="periode">Période</label>
-                    <va-date-picker id="periode" mode="range" v-model="selectedAlea.periode" />
+                    <va-date-picker id="periode" start-year="2000" end-year="2000" mode="range" v-model="selectedAlea.periode" />
                   </div>
                 </div>
               </slot>
@@ -205,6 +225,7 @@
             <va-list-item
                 v-for="(alea, aleaIndex) in formValues.selectedScenario.aleas"
                 :key="aleaIndex"
+                @click="selectedAlea = alea"
             >
               <va-list-item-section avatar>
                 <va-icon
@@ -219,7 +240,7 @@
                 </va-list-item-label>
 
                 <va-list-item-label caption>
-                  {{ dateService.formatToRelativeFrLocalDate(alea.periode?.start) }}<span v-if="alea.periode.end"> - {{ dateService.formatToRelativeFrLocalDate(alea.periode?.end) }}</span>
+                  {{ dateService.formatToRelativeFrLocalDate(alea?.periode?.start) }}<span v-if="alea?.periode?.end"> - {{ dateService.formatToRelativeFrLocalDate(alea.periode?.end) }}</span>
                 </va-list-item-label>
               </va-list-item-section>
 
@@ -273,6 +294,7 @@ import GraphRendement from '@/components/GraphRendement.vue'
 import GraphMarge from '@/components/GraphMarge.vue'
 import GraphBiomasse from '@/components/GraphBiomasse.vue'
 import { useDateService } from "@/services/date.service";
+import {useApiService} from "@/services/api.service";
 
 export default defineComponent({
   name: 'Home',
@@ -291,6 +313,7 @@ export default defineComponent({
     type Range = { min: number, max: number, default: number};
 
     const dateService = useDateService();
+    const apiService = useApiService();
 
     const solTypes = [...Array(3).keys()].map(v => `sol_${v+1}`);
     const aleaTypes = ['Sécheresse', 'Thermique', 'Grèle'];
@@ -300,6 +323,12 @@ export default defineComponent({
       'Thermique': { icon: 'thermostat', color: '#d50f0f'},
       'Grèle': { icon: 'grain', color: '#7fdbff'},
     };
+
+    const intensiteTypes = [
+      {label: 'faible',color: 'success'},
+      {label: 'moyen', color: 'warning'},
+      {label: 'fort', color: 'danger'}
+    ]
 
     const configRanges = {
       surface: {min: 5, max: 500, default: 100},
@@ -314,16 +343,26 @@ export default defineComponent({
       annee: {min:2011, max:2050, default:2014}
     };
 
-    const defaultFormValues: any = {lieu: "72000"};
+
+    /* init with default values ! */
+    const defaultFormValues: any = {lieu: 'Adriers (86001)'};
 
     Object.entries(configRanges).forEach( entry => {
       defaultFormValues[entry[0]] = entry[1].default
     });
 
-    console.log(defaultFormValues)
+    const defaultScenarios: Scenari[] = [
+        { "nom": "Scénario 1",
+          "aleas": [
+            { "type": "Grèle", "intensite": 1 , periode: { start: new Date() }},
+            { "type": "Sécheresse", "intensite": 0 , periode: { start: new Date(), end: new Date() } }
+          ]
+        }
+    ];
 
     const formValues = reactive(defaultFormValues as any);
-    const scenarios = reactive([] as Scenari[]);
+    const scenarios = reactive(defaultScenarios);
+
 
     const selectedAlea: Ref<null|Alea> = ref(null);
 
@@ -333,8 +372,6 @@ export default defineComponent({
         aleas: []
       });
     }
-    // init first scenari
-    pushNewScenario();
     formValues.selectedScenario = scenarios[0];
 
     const pushAlea = (scenari: Scenari) => {
@@ -347,6 +384,11 @@ export default defineComponent({
       selectedAlea.value = scenari.aleas[scenari.aleas.length-1]
     }
 
+    const optionsLieux = ref([defaultFormValues.lieu] as string[]);
+    const searchOptionsLieux = async (criteria: string) => {
+      optionsLieux.value = await apiService.findVille(criteria);
+    }
+
     return {
       configRanges,
       formValues,
@@ -354,10 +396,13 @@ export default defineComponent({
       solTypes,
       aleaTypes,
       aleaIcones,
+      intensiteTypes,
       pushNewScenario,
       pushAlea,
       selectedAlea,
-      dateService
+      dateService,
+      optionsLieux,
+      searchOptionsLieux
     }
   }
 });

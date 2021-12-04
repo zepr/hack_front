@@ -7,14 +7,18 @@
     <div class="content">
       <div class="lane">
         <div>
-          <label for="lieu">Lieu</label>
-          <va-input
-              class="m-4"
-              v-model="formValues.lieu"
+          <label for="lieu">Commune (Vienne et Deux-Sèvres)</label>
+          <va-select
               id="lieu"
-              placeholder="PRA"
+              @update-search="searchOptionsLieux"
+              :options="optionsLieux"
+              v-model="formValues.lieu"
+              no-options-text="Pas de correspondance trouvée"
+              searchable
           />
         </div>
+
+
         <div>
           <label for="surface">Surface (HA)</label>
           <va-input
@@ -252,6 +256,7 @@ import GraphRendement from '@/components/GraphRendement.vue'
 import GraphMarge from '@/components/GraphMarge.vue'
 import GraphBiomasse from '@/components/GraphBiomasse.vue'
 import { useDateService } from "@/services/date.service";
+import {useApiService} from "@/services/api.service";
 
 export default defineComponent({
   name: 'Home',
@@ -270,6 +275,7 @@ export default defineComponent({
     type Range = { min: number, max: number, default: number};
 
     const dateService = useDateService();
+    const apiService = useApiService();
 
     const solTypes = [...Array(3).keys()].map(v => `sol_${v+1}`);
     const aleaTypes = ['Sécheresse', 'Thermique', 'Grèle'];
@@ -300,7 +306,7 @@ export default defineComponent({
 
 
     /* init with default values ! */
-    const defaultFormValues: any = {lieu: 72000};
+    const defaultFormValues: any = {lieu: 'Adriers (86001)'};
 
     Object.entries(configRanges).forEach( entry => {
       defaultFormValues[entry[0]] = entry[1].default
@@ -314,8 +320,6 @@ export default defineComponent({
           ]
         }
     ];
-
-    console.log(defaultFormValues)
 
     const formValues = reactive(defaultFormValues as any);
     const scenarios = reactive(defaultScenarios);
@@ -341,6 +345,11 @@ export default defineComponent({
       selectedAlea.value = scenari.aleas[scenari.aleas.length-1]
     }
 
+    const optionsLieux = ref([defaultFormValues.lieu] as string[]);
+    const searchOptionsLieux = async (criteria: string) => {
+      optionsLieux.value = await apiService.findVille(criteria);
+    }
+
     return {
       configRanges,
       formValues,
@@ -352,7 +361,9 @@ export default defineComponent({
       pushNewScenario,
       pushAlea,
       selectedAlea,
-      dateService
+      dateService,
+      optionsLieux,
+      searchOptionsLieux
     }
   }
 });

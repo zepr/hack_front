@@ -1,10 +1,10 @@
 <template>
 
-  <div class="box">
+  <div class="box" id="paramCulture">
     <div class="header">
-        Configuration parcelle
+        Paramètre culture
     </div>
-  
+
     <div class="content">
       <div class="lane">
         <div>
@@ -38,14 +38,15 @@
               class="m-4"
               v-model="formValues.annee"
               id="année"
+              type="number"
               placeholder="2022"
           />
         </div>
       </div>
 
       <!-- CREATION DE LA LIGNE CONTENANT DONNEES PLANTE ET SOL-->
-      <div class="lane"> 
-        <div> <!-- CREATION DE LA COLONNE CONTENANT DONNEES PLANTE-->
+      <div class="lane">
+        <div class="subbox"> <!-- CREATION DE LA COLONNE CONTENANT DONNEES PLANTE-->
           <div class="lane">
             Données culture
           </div>
@@ -58,8 +59,8 @@
                 id="espece"
                 placeholder="Blé"
             />
-          </div>  
-          <div class="lane"> 
+          </div>
+          <div class="lane">
             <label for="rendementMax">Rendement maximum génétique (q/ha)</label>
             <va-input
                 v-model="formValues.rendementMax"
@@ -69,7 +70,7 @@
                 placeholder="120"
             />
           </div>
-          <div class="lane"> 
+          <div class="lane">
             <label for="pmgMax">PMG maximum génétique (g)</label>
             <va-input
                 v-model="formValues.pmgMax"
@@ -79,7 +80,7 @@
                 placeholder="42"
             />
           </div>
-          <div class="lane"> 
+          <div class="lane">
             <label for="tempMax">Temperature maximale plant (°C)</label>
             <va-input
                 v-model="formValues.tempMax"
@@ -89,7 +90,7 @@
                 placeholder="40"
             />
           </div>
-          <div class="lane"> 
+          <div class="lane">
             <label for="tempOptimale">Temperature optimale plant (°C)</label>
             <va-input
                 v-model="formValues.tempOptimale"
@@ -99,7 +100,7 @@
                 placeholder="15"
             />
           </div>
-          
+
         </div> <!-- FIN COLONNE CONTENANT DONNEES PLANTE-->
 
         <div> <!-- CREATION DE LA COLONNE CONTENANT DONNEES SOL-->
@@ -130,7 +131,7 @@
             Informations financières
           </div>
           <div class="lane">
-            
+
             <label for="prixDeVente">Prix de vente (€/t)</label>
             <va-input
                 v-model="formValues.prixDeVente"
@@ -153,19 +154,25 @@
 
         </div> <!-- FIN COLONNE CONTENANT DONNEES SOL et COUTS-->
 
-        
+
       </div> <!-- FIN LIGNE CONTENANT DONNEES PLANTE ET SOL/COUTS-->
-      
-      
-    
-     
-      
+
+
+
+
+
     </div>
   </div> <!-- Fin de la page-->
 
-  <div class="box">
+  <div class="box" id="projectionTheorique">
     <div class="header">
-      Scénarios <va-button @click="pushNewScenario()" :disabled="scenarios.length > 4" icon="add_circle_outline"></va-button>
+      Projection Théorique
+    </div>
+  </div>
+
+  <div class="box" id="paramScenario">
+    <div class="header">
+      Paramétrage Scénarios <va-button @click="pushNewScenario()" :disabled="scenarios.length > 4" icon="add_circle_outline"></va-button>
     </div>
     <div class="content">
       <div class="lane">
@@ -245,13 +252,19 @@
               </va-list-item-section>
 
               <va-list-item-section icon>
-                <va-icon @click='formValues.selectedScenario.aleas.splice(aleaIndex, 1)' name="remove_circle_outline" color="red" ></va-icon>
+                <va-icon @click='formValues.selectedScenario.aleas.splice(aleaIndex, 1)' name="remove_circle_outline" color="danger" ></va-icon>
               </va-list-item-section>
             </va-list-item>
           </va-list>
         </div>
 
       </div>
+    </div>
+  </div>
+
+  <div class="box" id="simulationScenario">
+    <div class="header">
+      Simulation Scénario
     </div>
   </div>
 

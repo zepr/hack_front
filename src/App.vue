@@ -23,6 +23,11 @@ body {
   background-size: cover;
 }
 
+.subbox {
+  border: solid 2px lightgrey;
+  padding: 20px;
+}
+
 .box {
   box-shadow:
       0 2.8px 2.2px rgba(0, 0, 0, 0.034),
@@ -46,14 +51,11 @@ body {
     margin-bottom: 30px
   }
 
-  .content {
-
-    .lane {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      margin-bottom: 30px;
-    }
+  .lane {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom: 30px;
   }
 
 }

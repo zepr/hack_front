@@ -4,6 +4,7 @@
     <div class="header">
         Configuration parcelle
     </div>
+  
     <div class="content">
       <div class="lane">
         <div>
@@ -27,99 +28,136 @@
         </div>
       </div>
       <div class="lane">
-
         <div>
-          <label for="epSol">Epaisseur de sol C0 (mm) - min:{{ configRanges.epSol.min}} - max:{{ configRanges.epSol.max}}</label>
+          <label for="Année de récolte">Année de récolte</label>
           <va-input
-              v-model="formValues.epSol"
-              type="number"
               class="m-4"
-              id="epSol"
-              placeholder="300"
-          />
-        </div>
-        <div>
-          <label for="reserveUtileEau">Réserve utile en eau Maximum (mm)</label>
-          <va-input
-              v-model="formValues.reserveUtileEau"
-              type="number"
-              class="m-4"
-              id="reserveUtileEau"
-              placeholder="100"
-          />
-        </div>
-      </div>
-      <div class="lane">
-
-        <div>
-          <label for="rendementMax">Rendement maximum génétique (q/ha)</label>
-          <va-input
-              v-model="formValues.rendementMax"
-              type="number"
-              class="m-4"
-              id="rendementMax"
-              placeholder="120"
-          />
-        </div>
-
-        <div>
-          <label for="pmgMax">PMG maximum génétique (g)</label>
-          <va-input
-              v-model="formValues.pmgMax"
-              type="number"
-              class="m-4"
-              id="pmgMax"
-              placeholder="42"
+              v-model="formValues.annee"
+              id="année"
+              placeholder="2022"
           />
         </div>
       </div>
 
-      <div class="lane">
-        <div>
-          <label for="tempMax">Temperature maximale plant (°C)</label>
-          <va-input
-              v-model="formValues.tempMax"
-              type="number"
-              class="m-4"
-              id="tempMax"
-              placeholder="40"
-          />
-        </div>
-        <div>
-          <label for="tempOptimale">Temperature optimale plant (°C)</label>
-          <va-input
-              v-model="formValues.tempOptimale"
-              type="number"
-              class="m-4"
-              id="tempOptimale"
-              placeholder="15"
-          />
-        </div>
-      </div>
-      <div class="lane">
-        <div>
-          <label for="prixDeVente">Prix de vente (€/t)</label>
-          <va-input
-              v-model="formValues.prixDeVente"
-              type="number"
-              class="m-4"
-              id="prixDeVente"
-              placeholder="100"
-          />
-        </div>
-        <div>
-          <label for="coutAssurance">Coût assurance (€/an)</label>
-          <va-input
-              v-model="formValues.coutAssurance"
-              type="number"
-              class="m-4"
-              id="coutAssurance"
-              placeholder="100"
-          />
-        </div>
-      </div>
+      <!-- CREATION DE LA LIGNE CONTENANT DONNEES PLANTE ET SOL-->
+      <div class="lane"> 
+        <div> <!-- CREATION DE LA COLONNE CONTENANT DONNEES PLANTE-->
+          <div class="lane">
+            Données culture
+          </div>
+          <div class="lane">
+            <label for="Espèce">Espèce</label>
+            <va-input
+                v-model="formValues.espece"
+                type="number"
+                class="m-4"
+                id="espece"
+                placeholder="Blé"
+            />
+          </div>  
+          <div class="lane"> 
+            <label for="rendementMax">Rendement maximum génétique (q/ha)</label>
+            <va-input
+                v-model="formValues.rendementMax"
+                type="number"
+                class="m-4"
+                id="rendementMax"
+                placeholder="120"
+            />
+          </div>
+          <div class="lane"> 
+            <label for="pmgMax">PMG maximum génétique (g)</label>
+            <va-input
+                v-model="formValues.pmgMax"
+                type="number"
+                class="m-4"
+                id="pmgMax"
+                placeholder="42"
+            />
+          </div>
+          <div class="lane"> 
+            <label for="tempMax">Temperature maximale plant (°C)</label>
+            <va-input
+                v-model="formValues.tempMax"
+                type="number"
+                class="m-4"
+                id="tempMax"
+                placeholder="40"
+            />
+          </div>
+          <div class="lane"> 
+            <label for="tempOptimale">Temperature optimale plant (°C)</label>
+            <va-input
+                v-model="formValues.tempOptimale"
+                type="number"
+                class="m-4"
+                id="tempOptimale"
+                placeholder="15"
+            />
+          </div>
+          
+        </div> <!-- FIN COLONNE CONTENANT DONNEES PLANTE-->
+
+        <div> <!-- CREATION DE LA COLONNE CONTENANT DONNEES SOL-->
+          <div class="lane">
+            Données sol
+          </div>
+          <div class="lane">
+            <label for="epSol">Epaisseur de sol C0 (mm) - min:{{ configRanges.epSol.min}} - max:{{ configRanges.epSol.max}}</label>
+            <va-input
+                v-model="formValues.epSol"
+                type="number"
+                class="m-4"
+                id="epSol"
+                placeholder="300"
+            />
+          </div>
+          <div class="lane">
+            <label for="reserveUtileEau">Réserve utile en eau Maximum (mm)</label>
+            <va-input
+                v-model="formValues.reserveUtileEau"
+                type="number"
+                class="m-4"
+                id="reserveUtileEau"
+                placeholder="100"
+            />
+          </div>
+          <div class="lane"> <!--PARTIE PRIX-->
+            Informations financières
+          </div>
+          <div class="lane">
+            
+            <label for="prixDeVente">Prix de vente (€/t)</label>
+            <va-input
+                v-model="formValues.prixDeVente"
+                type="number"
+                class="m-4"
+                id="prixDeVente"
+                placeholder="100"
+            />
+          </div>
+          <div class="lane">
+            <label for="coutAssurance">Coût assurance (€/an)</label>
+            <va-input
+                v-model="formValues.coutAssurance"
+                type="number"
+                class="m-4"
+                id="coutAssurance"
+                placeholder="100"
+            />
+          </div>
+
+        </div> <!-- FIN COLONNE CONTENANT DONNEES SOL et COUTS-->
+
+        
+      </div> <!-- FIN LIGNE CONTENANT DONNEES PLANTE ET SOL/COUTS-->
+      
+      
+    
+     
+      
     </div>
-  </div>
+  </div> <!-- Fin de la page-->
 
   <div class="box">
     <div class="header">
@@ -273,6 +311,7 @@ export default defineComponent({
       tempOptimale: {min: 10, max: 15, default: 30},
       prixDeVente: {min: 5, max: 13, default: 20},
       coutAssurance: {min: 1000, max: 1500, default: 2000},
+      annee: {min:2011, max:2050, default:2014}
     };
 
     const defaultFormValues: any = {lieu: "72000"};

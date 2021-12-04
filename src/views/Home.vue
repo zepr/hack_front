@@ -18,26 +18,11 @@
               searchable
           />
         </div>
-
-
         <div>
-          <label for="surface">Surface (HA)</label>
+          <label for="anneeRecolte">Année de récolte</label>
           <va-input
-              type="number"
-              v-model="formValues.surface"
-              class="m-4"
-              id="surface"
-              placeholder="100"
-          />
-        </div>
-      </div>
-      <div class="lane">
-        <div>
-          <label for="Année de récolte">Année de récolte</label>
-          <va-input
-              class="m-4"
               v-model="formValues.annee"
-              id="année"
+              id="anneeRecolte"
               type="number"
           />
         </div>
@@ -50,39 +35,43 @@
             Données culture
           </div>
           <div class="lane">
-            <label for="Espèce">Espèce</label>
-            <va-input
-                v-model="formValues.espece"
-                type="number"
-                class="m-4"
-                id="espece"
-                placeholder="Blé"
-            />
+            <div>
+              <label for="espece">Espèce</label>
+              <va-input
+                  v-model="formValues.espece"
+                  id="espece"
+                  placeholder="Blé"
+              />
+            </div>
+
           </div>
           <div class="lane">
-            <label for="rendementMax">Rendement maximum génétique (q/ha)</label>
-            <va-input
-                v-model="formValues.rendementMax"
-                type="number"
-                class="m-4"
-                id="rendementMax"
-                placeholder="120"
-            />
+            <div>
+              <label for="rendementMax">Rendement maximum génétique (q/ha)</label>
+              <va-input
+                  v-model="formValues.rendementMax"
+                  type="number"
+                  id="rendementMax"
+                  placeholder="120"
+              />
+            </div>
           </div>
           <div class="lane">
-            <label for="pmgMax">PMG maximum génétique (g)</label>
-            <va-input
-                v-model="formValues.pmgMax"
-                type="number"
-                class="m-4"
-                id="pmgMax"
-                placeholder="42"
-            />
+            <div>
+              <label for="pmgMax">PMG maximum génétique (g)</label>
+              <va-input
+                  v-model="formValues.pmgMax"
+                  type="number"
+                  class="m-4"
+                  id="pmgMax"
+                  placeholder="42"
+              />
+            </div>
           </div>
-          <div class="lane"> 
+          <div class="lane">
             <div>
               <label for="tempMax">Temperature maximale plant (°C)</label>
-              <va-slider 
+              <va-slider
                 v-model="formValues.tempMax"
                 color="#e34a4a"
                 :min="configRanges.tempMax.min"
@@ -92,14 +81,16 @@
             </div>
           </div>
           <div class="lane">
-            <label for="tempOptimale">Temperature optimale plant (°C)</label>
-            <va-slider
-              v-model="formValues.tempOptimale"
-              color="warning"
-              :min="configRanges.tempOptimale.min"
-              :max="configRanges.tempOptimale.max"
-              track-label-visible
-            />
+            <div>
+              <label for="tempOptimale">Temperature optimale plant (°C)</label>
+              <va-slider
+                  v-model="formValues.tempOptimale"
+                  color="warning"
+                  :min="configRanges.tempOptimale.min"
+                  :max="configRanges.tempOptimale.max"
+                  track-label-visible
+              />
+            </div>
           </div>
 
         </div> <!-- FIN COLONNE CONTENANT DONNEES PLANTE-->
@@ -111,7 +102,7 @@
           <div class="lane" style="height: 50px;">
             <label for="epSol">Epaisseur de sol C0 (mm) - min:{{ configRanges.epSol.min}} - max:{{ configRanges.epSol.max}}</label>
 
-            <va-slider 
+            <va-slider
                 v-model="formValues.epSol"
                 vertical
                 color="#976318"
@@ -123,7 +114,7 @@
           </div>
           <div class="lane" style="height: 50px;">
             <label for="reserveUtileEau">Réserve utile en eau Maximum (mm)</label>
-            <va-slider 
+            <va-slider
                 v-model="formValues.reserveUtileEau"
                 vertical
                 color="#181C97"
@@ -132,7 +123,7 @@
                 track-label-visible
             />
           </div>
-          
+
           </div>
 
         </div> <!-- FIN COLONNE CONTENANT DONNEES SOL et COUTS-->
@@ -428,7 +419,7 @@ export default defineComponent({
     const maxRendementSimulationTheorique = ref(0);
     const querySimulationTheorique = async () => {
       const startDate = new Date(formValues.annee, 0, 1);
-      const rawSimulationData = await  apiService.getDatedRendement(startDate);
+      const rawSimulationData = apiService.getDatedRendement(startDate, await apiService.getSimulationTheorique());
       const flattenedChartData = apiService.flattenAsChartData(rawSimulationData);
       flattenedChartData.forEach( data => dataSimulationTheorique.value[data[0]] = data);
 
@@ -447,12 +438,12 @@ export default defineComponent({
     const matiereSecheSimulationScenarioPlusTheorique =  ref([] as any[]);
     const querySimulationScenario = async () => {
       const startDate = new Date(formValues.annee, 0, 1);
-      const rawSimulationData = await apiService.getDatedRendement(startDate);
+      const rawSimulationData = await apiService.getDatedRendement(startDate, await apiService.getSimulationScenario());
       const flattenedChartData = apiService.flattenAsChartData(rawSimulationData);
       flattenedChartData.forEach( data => dataSimulationScenario.value[data[0]] = data);
 
-      const renamedDataSimulationScenario = ["matiereSecheScenario",...dataSimulationScenario.value["matiereSecheTheorique"].slice(1)];
-      matiereSecheSimulationScenarioPlusTheorique.value = [dataSimulationScenario.value["date"], renamedDataSimulationScenario, dataSimulationTheorique.value["matiereSecheTheorique"]];
+      const renamedDataSimulationScenario = ["matiereSecheScenario",...dataSimulationScenario.value["matiereSeche"].slice(1)];
+      matiereSecheSimulationScenarioPlusTheorique.value = [dataSimulationScenario.value["date"], renamedDataSimulationScenario, dataSimulationTheorique.value["matiereSeche"]];
 
       maxRendementSimulationScenario.value = Math.max(...(dataSimulationScenario.value["rendement"].slice(1)));
 

@@ -22,7 +22,7 @@ export default defineComponent({
     onMounted( async () => {
 
       const startDate = new Date('2013-06-01');
-      const rendement = await apiService.getDatedRendement(startDate);
+      const rendement = apiService.getDatedRendement(startDate, await apiService.getSimulationTheorique());
       const flattenedData = apiService.flattenAsChartData(rendement);
 
       var chart = c3.generate({

@@ -55,7 +55,7 @@ body {
   .lane {
       display: flex;
       justify-content: space-around;
-      align-items: center;
+      align-items: top;
       margin-bottom: 30px;
       .va-slider {
         width: 100px;

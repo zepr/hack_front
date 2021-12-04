@@ -1,7 +1,7 @@
 
 
 <template>
-  Affichage du tableau
+  Rendement
   <div id="chartRendement"></div>
 </template>
 

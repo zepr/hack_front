@@ -38,7 +38,7 @@ body {
   padding: 30px 30px;
   background: white;
   border-radius: 5px;
-  width: 90%;
+  width: 98%;
 
   .header {
     font-weight: bolder;

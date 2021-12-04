@@ -1,13 +1,16 @@
 
 
 function formatToIsoLocalDate( date: Date): string{
-  return `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
+  return date ? `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}` : '';
 }
 
 function formatToFrLocalDate( date: Date): string{
-  return `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
+  return date ? `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}` : '';
 }
 
+function formatToRelativeFrLocalDate(date: Date): string{
+  return date ? `${date.getDate()}/${date.getMonth()+1}` : '';
+}
 
 function rollUpDate(date: Date): Date{
   let nextDay = new Date(date);
@@ -19,6 +22,7 @@ export function useDateService() {
   return {
     formatToIsoLocalDate,
     rollUpDate,
-    formatToFrLocalDate
+    formatToFrLocalDate,
+    formatToRelativeFrLocalDate
   }
 }

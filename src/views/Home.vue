@@ -147,14 +147,30 @@
               <slot>
                 <div class="lane">
                   <div>
-                    <label for="alea">Aléa</label>
-                    <va-select id="alea" v-model="selectedAlea.type"  :options="aleaTypes" />
+                    <label for="aleaType">Aléa</label>
+                    <va-option-list
+                        id="aleaType"
+                        type="radio"
+                        :options="aleaTypes"
+                        v-model="selectedAlea.type"
+                    />
+                  </div>
+                </div>
+                <div class="lane">
+                  <div>
+                    <label for="aleaIntensity">Intensité</label>
+                    <va-slider id="aleaIntensity"
+                               :label="intensiteTypes[selectedAlea.intensite].label"
+                               :label-color="intensiteTypes[selectedAlea.intensite].color"
+                               :color="intensiteTypes[selectedAlea.intensite].color"
+                               v-model="selectedAlea.intensite"
+                               min="0" max="2" />
                   </div>
                 </div>
                 <div class="lane">
                   <div>
                     <label for="periode">Période</label>
-                    <va-date-picker id="periode" mode="range" v-model="selectedAlea.periode" />
+                    <va-date-picker id="periode" start-year="2000" end-year="2000" mode="range" v-model="selectedAlea.periode" />
                   </div>
                 </div>
               </slot>
@@ -167,6 +183,7 @@
             <va-list-item
                 v-for="(alea, aleaIndex) in formValues.selectedScenario.aleas"
                 :key="aleaIndex"
+                @click="selectedAlea = alea"
             >
               <va-list-item-section avatar>
                 <va-icon
@@ -181,7 +198,7 @@
                 </va-list-item-label>
 
                 <va-list-item-label caption>
-                  {{ dateService.formatToRelativeFrLocalDate(alea.periode?.start) }}<span v-if="alea.periode.end"> - {{ dateService.formatToRelativeFrLocalDate(alea.periode?.end) }}</span>
+                  {{ dateService.formatToRelativeFrLocalDate(alea?.periode?.start) }}<span v-if="alea?.periode?.end"> - {{ dateService.formatToRelativeFrLocalDate(alea.periode?.end) }}</span>
                 </va-list-item-label>
               </va-list-item-section>
 
@@ -263,6 +280,12 @@ export default defineComponent({
       'Grèle': { icon: 'grain', color: '#7fdbff'},
     };
 
+    const intensiteTypes = [
+      {label: 'faible',color: 'success'},
+      {label: 'moyen', color: 'warning'},
+      {label: 'fort', color: 'danger'}
+    ]
+
     const configRanges = {
       surface: {min: 5, max: 500, default: 100},
       epSol: {min: 5, max: 200, default: 100},
@@ -275,16 +298,28 @@ export default defineComponent({
       coutAssurance: {min: 1000, max: 1500, default: 2000},
     };
 
-    const defaultFormValues: any = {lieu: "72000"};
+
+    /* init with default values ! */
+    const defaultFormValues: any = {lieu: 72000};
 
     Object.entries(configRanges).forEach( entry => {
       defaultFormValues[entry[0]] = entry[1].default
     });
 
+    const defaultScenarios: Scenari[] = [
+        { "nom": "Scénario 1",
+          "aleas": [
+            { "type": "Grèle", "intensite": 1 , periode: { start: new Date() }},
+            { "type": "Sécheresse", "intensite": 0 , periode: { start: new Date(), end: new Date() } }
+          ]
+        }
+    ];
+
     console.log(defaultFormValues)
 
     const formValues = reactive(defaultFormValues as any);
-    const scenarios = reactive([] as Scenari[]);
+    const scenarios = reactive(defaultScenarios);
+
 
     const selectedAlea: Ref<null|Alea> = ref(null);
 
@@ -294,8 +329,6 @@ export default defineComponent({
         aleas: []
       });
     }
-    // init first scenari
-    pushNewScenario();
     formValues.selectedScenario = scenarios[0];
 
     const pushAlea = (scenari: Scenari) => {
@@ -315,6 +348,7 @@ export default defineComponent({
       solTypes,
       aleaTypes,
       aleaIcones,
+      intensiteTypes,
       pushNewScenario,
       pushAlea,
       selectedAlea,

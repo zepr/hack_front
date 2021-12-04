@@ -311,6 +311,7 @@ import {defineComponent, reactive, ref, Ref} from 'vue';
 import GraphRendement from '@/components/GraphRendement.vue'
 import GraphMarge from '@/components/GraphMarge.vue'
 import GraphBiomasse from '@/components/GraphBiomasse.vue'
+import GraphProba from'@/components/GraphProba.vue'
 import { useDateService } from "@/services/date.service";
 import {useApiService} from "@/services/api.service";
 
@@ -319,7 +320,8 @@ export default defineComponent({
   components: {
     GraphBiomasse,
     GraphRendement,
-    GraphMarge
+    GraphMarge,
+    GraphProba
   },
   props: {
   },

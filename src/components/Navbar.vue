@@ -1,33 +1,49 @@
 <template>
-<!--  <div id="container">-->
-<!--    <img id="image" src="@/assets/hackathon_varenne.jpg" />-->
-<!--    <p id="text">-->
-<!--      CLIMATIPS-->
-<!--    </p>-->
-<!--  </div>-->
-
+  <div class="container">
+    <img src="@/assets/hackathon_varenne.jpg" />
+    <div class="hero-title">
+      <h1 class="shadow">
+      <span>C</span><span>L</span><span>I</span><span>M</span><span>A</span><span>T</span><span>I</span><span>P</span><span>S</span>
+    </h1></div>
+  </div>
 </template>
 
 <style lang="scss">
-#container {
+
+
+.shadow {
+  font-family: "Be Vietnam Pro", sans-serif;
+  text-transform: uppercase;
+  font-size: 5rem;
+  letter-spacing: -0.65rem;
+  color: #e1e3e5;
+  text-shadow: -15px 5px 20px #000000;
+  transition: all 0.5s ease-in-out;
+}
+
+.container {
   width: 100%;
-  position: relative;
-  margin-bottom: 270px
 }
-#image {
-  position: absolute;
-  left: 0;
-  top: 0;
+
+img {
+  width: 100%;
 }
-#text {
+
+.hero-title {
+  height: 0px;
   z-index: 100;
-  position: absolute;
-  left: 200px;
-  top: 350px;
+  position: relative;
+  top: -3em;
 
   font-weight: bolder;
-  font-size: xxx-large;
+  font-size: 60px;
   color: #cccccc;
+  h1 {
+    height: 3em;
+  }
+  span {
+    margin-right: 5px
+  }
 }
 
 </style>

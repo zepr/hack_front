@@ -2,7 +2,7 @@
 
 
 <template>
-Probabilité des aléas
+
 <div id="chartgraphProba"></div>
 
 </template>
@@ -25,16 +25,21 @@ export default defineComponent({
         data: {
           x:'date',
           columns: [
-              ['exces eau 1', 0.30, 0.200, 0.100, 0.400, 0.500, 0.550],
+              ['date','2013-01-01', '2013-01-02', '2013-01-03', '2013-01-04', '2013-01-05', '2013-01-06'],
+              ['exces eau', 0.30, 0.200, 0.100, 0.400, 0.500, 0.550],
               ['sécheresse', 0.30, 0.200, 0.50, 0.100, 0.150, 0.250]
           ],
         },
         axis: {
           x: {
               type: 'timeseries',
+              label: 'Année',
               tick: {
                   format: '%Y-%m-%d'
               }
+          },
+          y: {
+            label:'Probabilité d apparition'
           }
         },
         grid: { // Représenter le seuil de probabilité
@@ -42,6 +47,7 @@ export default defineComponent({
               lines: [
                   {value: '0.5' , text: 'Seuil'}
               ]
+              
           }
              
         }, 

@@ -148,6 +148,9 @@
     </div>
     <div class="content">
       <div class="lane">
+        <GraphProba></GraphProba>
+      </div>
+      <div class="lane">
         <TimeserieLinearGraph
             v-if="matiereSecheSimulationTheorique.length >= 2"
             :data="matiereSecheSimulationTheorique"

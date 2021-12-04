@@ -95,6 +95,19 @@
     </div>
   </div>
 
+    <div class="box">
+    <div class="content">
+      <GraphRendement></GraphRendement>
+    </div>
+  </div>
+
+    <div class="box">
+    <div class="content">
+      <GraphMarge></GraphMarge>
+    </div>
+  </div>
+
+
   <div class="box">
     <div class="header">
       debug
@@ -109,11 +122,14 @@
 <script lang="ts">
 import {defineComponent, reactive} from 'vue';
 import TestC3 from '@/components/TestC3.vue'
-
+import GraphRendement from '@/components/GraphRendement.vue'
+import GrapheMarge from '@/components/GraphMarge.vue'
 export default defineComponent({
   name: 'Home',
   components: {
-    TestC3
+    TestC3,
+    GraphRendement,
+    GrapheMarge
   },
   props: {
   },

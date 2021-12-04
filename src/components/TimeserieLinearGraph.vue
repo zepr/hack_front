@@ -38,6 +38,7 @@ export default defineComponent({
         data: {
           x: xName,
           columns: data,
+          
         },
         axis: {
           x: {
@@ -46,7 +47,11 @@ export default defineComponent({
               format: (x: any) => dateService.formatToFrLocalDate(x)
             }
           }
+        },
+        point: {
+          show: false
         }
+        
       }
     );
   })

@@ -2,7 +2,7 @@
 
   <div class="box" id="paramCulture">
     <div class="header">
-        Paramètre culture
+        Paramètres de la culture
     </div>
 
     <div class="content">
@@ -99,20 +99,25 @@
           <div class="lane">
             Données sol
           </div>
-          <div class="lane" style="height: 50px;">
+          <div class="lane" style="height: 200px;">
             <label for="epSol">Epaisseur de sol C0 (mm) - min:{{ configRanges.epSol.min}} - max:{{ configRanges.epSol.max}}</label>
 
-            <va-slider
-                v-model="formValues.epSol"
-                vertical
-                color="#976318"
+            <va-slider v-model="formValues.epSol" vertical color="#976318"
+              heigth=1000px
                 :min="configRanges.epSol.min"
                 :max="configRanges.epSol.max"
                 track-label-visible
-            />
+              >
+              <template #prepend>
+                <va-input type="number" v-model="formValues.epSol"></va-input>
+              </template>
+            </va-slider>
+
+            
+            
 
           </div>
-          <div class="lane" style="height: 50px;">
+          <div class="lane" style="height: 150px;">
             <label for="reserveUtileEau">Réserve utile en eau Maximum (mm)</label>
             <va-slider
                 v-model="formValues.reserveUtileEau"

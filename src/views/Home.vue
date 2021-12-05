@@ -205,8 +205,10 @@
           <va-list>
 
             <va-modal
+                v-if="selectedAlea"
                 v-model="selectedAlea"
                 hide-default-actions
+                :close="() => selectedAlea = null"
             >
               <template #header>
                 <h2>Edition aléa</h2>
@@ -297,23 +299,19 @@
         ></TimeserieLinearGraph>
       </div>
       <div class="lane">
+        <gauge-ratio v-if="maxRendementSimulationScenario != 0 && maxRendementSimulationTheorique != 0"
+          :actual="maxRendementSimulationScenario"
+          :expected="maxRendementSimulationTheorique">
+        </gauge-ratio>
       </div>
     </div>
   </div>
 
-  <div class="box">
-    <div class="header">
-      debug
-    </div>
-    <div class="content">
-      {{ eauSecheresseProbaAlea }}
-    </div>
-  </div>
 
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, reactive, ref, Ref} from 'vue';
+import {computed, defineComponent, reactive, ref, Ref, watch} from 'vue';
 import GraphRendement from '@/components/GraphRendement.vue'
 import GraphMarge from '@/components/GraphMarge.vue'
 import GraphBiomasse from '@/components/GraphBiomasse.vue'
@@ -321,10 +319,12 @@ import GraphProba from'@/components/GraphProba.vue'
 import { useDateService } from "@/services/date.service";
 import {useApiService} from "@/services/api.service";
 import TimeserieLinearGraph from "@/components/TimeserieLinearGraph.vue";
+import GaugeRatio from "@/components/GaugeRatio.vue";
 
 export default defineComponent({
   name: 'Home',
   components: {
+    GaugeRatio,
     TimeserieLinearGraph,
     GraphBiomasse,
     GraphRendement,
@@ -385,15 +385,14 @@ export default defineComponent({
     const defaultScenarios: Scenari[] = [
         { "nom": "Scénario 1",
           "aleas": [
-            { "type": "Eau", "intensite": 1 , periode: { start: new Date(2023,5,5), end: new Date(2023,5,8) }},
-            { "type": "Sécheresse", "intensite": 0 , periode: { start: new Date(2023,7,5), end: new Date(2023,7,29) } }
+            { "type": "Sécheresse", "intensite": 0 , periode: { start: new Date(2023,3,5), end: new Date(2023,3,29) } },
+            { "type": "Eau", "intensite": 1 , periode: { start: new Date(2023,5,5), end: new Date(2023,5,8) }}
           ]
         }
     ];
 
     const formValues = reactive(defaultFormValues as any);
     const scenarios = reactive(defaultScenarios);
-
 
     const selectedAlea: Ref<null|Alea> = ref(null);
 
@@ -427,7 +426,9 @@ export default defineComponent({
     const maxRendementSimulationTheorique = ref(0);
     const querySimulationTheorique = async () => {
       const startDate = new Date(formValues.annee, 0, 1);
-      const rawSimulationData = apiService.getDatedRendement(startDate, await apiService.getSimulationTheorique());
+
+      const rawSimulationData = apiService.getDatedRendement(startDate,
+          await apiService.getSimulationTheorique());
       const flattenedChartData = apiService.flattenAsChartData(rawSimulationData);
       flattenedChartData.forEach( data => dataSimulationTheorique.value[data[0]] = data);
 
@@ -446,7 +447,8 @@ export default defineComponent({
     const matiereSecheSimulationScenarioPlusTheorique =  ref([] as any[]);
     const querySimulationScenario = async () => {
       const startDate = new Date(formValues.annee, 0, 1);
-      const rawSimulationData = await apiService.getDatedRendement(startDate, await apiService.getSimulationScenario());
+      const rawSimulationData = apiService.getDatedRendement(startDate,
+          await apiService.getSimulationScenario((formValues.selectedScenario as Scenari).aleas));
       const flattenedChartData = apiService.flattenAsChartData(rawSimulationData);
       flattenedChartData.forEach( data => dataSimulationScenario.value[data[0]] = data);
 
@@ -499,6 +501,15 @@ export default defineComponent({
 
     };
     queryProbaAlea();
+
+    watch(formValues, () => {
+      console.log("changed !!");
+      querySimulationTheorique()
+          .then( () => {
+            querySimulationScenario();
+          });
+      queryProbaAlea();
+    });
 
     return {
       configRanges,

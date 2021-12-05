@@ -504,10 +504,6 @@ export default defineComponent({
 
     watch(formValues, debounce( () => {
         console.log("changed vue");
-        querySimulationTheorique()
-            .then( () => {
-              querySimulationScenario();
-            });
         queryProbaAlea();
       }, 500)
     );

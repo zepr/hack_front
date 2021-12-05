@@ -27,9 +27,12 @@ export default defineComponent({
     },
     regions: {
       type: Object as PropType<any[]>
+    },
+    yAxis: {
+      type: Object as PropType<any[]>
     }
   },
-  setup: ({id, data , xName, grid, regions}) => {
+  setup: ({id, data , xName, grid, regions, yAxis}) => {
 
     console.log("data", (data as any)[0]);
     console.log("id", id);
@@ -50,9 +53,16 @@ export default defineComponent({
           x: {
             type: 'timeseries',
             tick: {
-              format: (x: any) => dateService.formatToFrLocalDate(x)
+              format: (x: any) => dateService.formatToFrLocalDate(x),
+              count: 12
             }
-          }
+          },
+          y: yAxis as any
+
+        },
+
+        legend:{
+          show:false
         },
         grid: grid,
         regions: regions,
@@ -71,6 +81,12 @@ export default defineComponent({
 <style lang="scss">
   .Sécheresse {
     fill: #ff0000 !important;
+  }
+
+  .c3-axis-y-label {
+    fill: #252525 !important;
+    font: 15px Avenir !important;
+    font-weight: bold !important;
   }
 
   .c3-grid-lines {

@@ -113,8 +113,8 @@
               </template>
             </va-slider>
 
-
-
+            
+            
 
           </div>
           <div class="lane" style="height: 150px;">
@@ -140,40 +140,54 @@
 
   <div class="box" id="projectionTheorique">
     <div class="header">
-      Projection Théorique
+      Développement de la plante
     </div>
     <div class="content">
       <div class="lane">
+        Evolution potentielle de la biomasse
+      </div>
+      <div class="lane">
+        <div>
+          <TimeserieLinearGraph
+              v-if="matiereSecheSimulationTheorique.length >= 2"
+              :data="matiereSecheSimulationTheorique"
+              id="matiereSeche"
+              :x-name="date"
+              :yAxis="{label:{text: 'Matière sèche (g/cm2)',position: 'outer-center'}}"
+                
+                            
+            ></TimeserieLinearGraph>
+            
+        </div>
+        <div style="width: 100px"> 
+          Rendement potentiel: XX Qt/ha
+        </div>
+      </div>
+      <div class="lane">
+        
+      </div>
+      <div class="lane">
+        Risque climatique
+      </div>
+      <div class="lane">
         <GraphProba></GraphProba>
-      </div>
-      <div class="lane">
-        <TimeserieLinearGraph
-            v-if="matiereSecheSimulationTheorique.length >= 2"
-            :data="matiereSecheSimulationTheorique"
-            id="matiereSeche"
-            :x-name="date"
-          ></TimeserieLinearGraph>
-      </div>
-      <div class="lane">
-        <TimeserieLinearGraph
-            v-if="rendementSimulationTheorique.length >= 2"
-            :data="rendementSimulationTheorique"
-            id="rendement"
-            :x-name="date"
-        ></TimeserieLinearGraph>
       </div>
     </div>
   </div>
 
   <div class="box" id="paramScenario">
     <div class="header">
-      Paramétrage Scénarios <va-button @click="pushNewScenario()" :disabled="scenarios.length > 4" icon="add_circle_outline"></va-button>
+      Simulation des aléas climatiques 
     </div>
     <div class="content">
       <div class="lane">
         <va-button-group outline>
           <va-button v-for="scenari in scenarios" @click="formValues.selectedScenario = scenari"> {{ scenari.nom }}</va-button>
         </va-button-group>
+      </div>
+      <div class="lane" length="100px">
+        <va-button @click="pushNewScenario()" :disabled="scenarios.length > 4" icon="add_circle_outline"></va-button>
+        <va-button @click="deleteNewScenario()" :disabled="scenarios.length > 4" icon="remove_circle_outline"></va-button>
       </div>
 
       <div class="lane">
@@ -189,6 +203,9 @@
                 <h2>Edition aléa</h2>
               </template>
               <slot>
+                <div class="header" width='50px'>
+                  Aléa
+                </div>
                 <div class="lane">
                   <div>
                     <label for="aleaType">Aléa</label>
@@ -199,6 +216,8 @@
                         v-model="selectedAlea.type"
                     />
                   </div>
+                </div>
+                <div>
                 </div>
                 <div class="lane">
                   <div>
@@ -211,10 +230,17 @@
                                min="0" max="2" />
                   </div>
                 </div>
+                <div>
+                </div>
                 <div class="lane">
                   <div>
                     <label for="periode">Période</label>
-                    <va-date-picker id="periode" start-year="2000" end-year="2000" mode="range" v-model="selectedAlea.periode" />
+                    <va-date-picker 
+                      id="periode" 
+                      start-year="2000" 
+                      end-year="2050" 
+                      mode="range" 
+                      v-model="selectedAlea.periode" />
                   </div>
                 </div>
               </slot>
@@ -259,7 +285,7 @@
 
   <div class="box" id="simulationScenario">
     <div class="header">
-      Simulation Scénario
+      Evolution de la biomasse
     </div>
     <div class="content">
       <div class="lane">
@@ -268,8 +294,6 @@
             :data="matiereSecheSimulationScenarioPlusTheorique"
             id="matiereSecheSimulation"
             :x-name="date"
-            :grid="gridMatiereSecheSimulationScenarioPlusTheorique"
-            :regions="regionsMatiereSecheSimulationScenarioPlusTheorique"
         ></TimeserieLinearGraph>
       </div>
       <div class="lane">
@@ -301,10 +325,10 @@
       debug
     </div>
     <div class="content">
-      {{ regionsMatiereSecheSimulationScenarioPlusTheorique }}
+      {{ formValues }}
     </div>
     <div class="content">
-      {{ gridMatiereSecheSimulationScenarioPlusTheorique }}
+      {{ scenarios }}
     </div>
   </div>
 
@@ -370,7 +394,7 @@ export default defineComponent({
       tempOptimale: {min: 10, max: 15, default: 30},
       prixDeVente: {min: 5, max: 13, default: 20},
       coutAssurance: {min: 1000, max: 1500, default: 2000},
-      annee: {min:2011, max:2050, default:2023}
+      annee: {min:2011, max:2050, default:2014}
     };
 
 
@@ -384,8 +408,8 @@ export default defineComponent({
     const defaultScenarios: Scenari[] = [
         { "nom": "Scénario 1",
           "aleas": [
-            { "type": "Grèle", "intensite": 1 , periode: { start: new Date(2023,5,5) }},
-            { "type": "Sécheresse", "intensite": 0 , periode: { start: new Date(2023,7,5), end: new Date(2023,7,29) } }
+            { "type": "Grèle", "intensite": 1 , periode: { start: new Date() }},
+            { "type": "Sécheresse", "intensite": 0 , periode: { start: new Date(), end: new Date() } }
           ]
         }
     ];
@@ -453,36 +477,14 @@ export default defineComponent({
       matiereSecheSimulationScenarioPlusTheorique.value = [dataSimulationScenario.value["date"], renamedDataSimulationScenario, dataSimulationTheorique.value["matiereSeche"]];
 
       maxRendementSimulationScenario.value = Math.max(...(dataSimulationScenario.value["rendement"].slice(1)));
+
     };
     querySimulationTheorique()
         .then( () => {
       querySimulationScenario();
     });
 
-    const gridMatiereSecheSimulationScenarioPlusTheorique = ref({
-      x: {},
-      y: {}
-    } as any);
-    const regionsMatiereSecheSimulationScenarioPlusTheorique = ref([] as any[]);
-    const computeAleaChart =  (scenario: Scenari) => {
 
-      scenario.aleas.forEach( alea => {
-        if ( alea.periode?.start ){
-            gridMatiereSecheSimulationScenarioPlusTheorique.value.x.lines = gridMatiereSecheSimulationScenarioPlusTheorique.value.x.lines || [];
-          gridMatiereSecheSimulationScenarioPlusTheorique.value.x.lines.push(
-              {value: dateService.formatToIsoLocalDate(alea.periode.start), text: alea.type}
-          );
-          if ( alea.periode.end ) {
-            regionsMatiereSecheSimulationScenarioPlusTheorique.value.push({
-              start: dateService.formatToIsoLocalDate(alea.periode.start),
-              end: dateService.formatToIsoLocalDate(alea.periode.end),
-              class: alea.type
-            });
-          }
-        }
-      })
-    };
-    scenarios.forEach(scenari => computeAleaChart(scenari as Scenari));
 
     return {
       configRanges,
@@ -502,9 +504,7 @@ export default defineComponent({
       rendementSimulationTheorique,
       matiereSecheSimulationScenarioPlusTheorique,
       maxRendementSimulationScenario,
-      maxRendementSimulationTheorique,
-      regionsMatiereSecheSimulationScenarioPlusTheorique,
-      gridMatiereSecheSimulationScenarioPlusTheorique
+      maxRendementSimulationTheorique
     }
   }
 });

@@ -29,7 +29,12 @@ export default defineComponent({
               ['exces eau', 0.30, 0.200, 0.100, 0.400, 0.500, 0.550],
               ['sécheresse', 0.30, 0.200, 0.50, 0.100, 0.150, 0.250]
           ],
+          type:'spline'
         },
+        legend:{
+          position:'right'
+        },
+
         axis: {
           x: {
               type: 'timeseries',
@@ -39,7 +44,11 @@ export default defineComponent({
               }
           },
           y: {
-            label:'Probabilité d apparition'
+            label: {
+              text:'Probabilité d apparition',
+              position: 'outer-middle'
+            }
+
           }
         },
         grid: { // Représenter le seuil de probabilité
@@ -47,6 +56,7 @@ export default defineComponent({
               lines: [
                   {value: '0.5' , text: 'Seuil'}
               ]
+              
               
           }
              

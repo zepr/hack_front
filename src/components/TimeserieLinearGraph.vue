@@ -28,15 +28,18 @@ export default defineComponent({
     regions: {
       type: Object as PropType<any[]>
     },
+    dataRegions: {
+      type: Object as PropType<any[]>
+    },
     yAxis: {
       type: Object as PropType<any[]>
+    },
+    zoom: {
+      type: Boolean,
+      default: true
     }
   },
-  setup: ({id, data , xName, grid, regions, yAxis}) => {
-
-    console.log("data", (data as any)[0]);
-    console.log("id", id);
-    console.log("xName",xName);
+  setup: ({id, data , xName, grid, regions, dataRegions, yAxis, zoom}) => {
 
     const dateService = useDateService();
 
@@ -47,7 +50,7 @@ export default defineComponent({
         data: {
           x: xName,
           columns: data,
-
+          regions: dataRegions as any,
         },
         axis: {
           x: {
@@ -68,6 +71,9 @@ export default defineComponent({
         regions: regions,
         point: {
           show: false
+        },
+        zoom: {
+          enabled: zoom
         }
 
       }
@@ -81,6 +87,10 @@ export default defineComponent({
 <style lang="scss">
   .Sécheresse {
     fill: #ff0000 !important;
+  }
+
+  .Eau {
+    fill: #007df1 !important;
   }
 
   .c3-axis-y-label {

@@ -113,8 +113,8 @@
               </template>
             </va-slider>
 
-            
-            
+
+
 
           </div>
           <div class="lane" style="height: 150px;">
@@ -147,37 +147,46 @@
         Evolution potentielle de la biomasse
       </div>
       <div class="lane">
-        <div>
-          <TimeserieLinearGraph
-              v-if="matiereSecheSimulationTheorique.length >= 2"
-              :data="matiereSecheSimulationTheorique"
-              id="matiereSeche"
-              :x-name="date"
-              :yAxis="{label:{text: 'Matière sèche (g/cm2)',position: 'outer-center'}}"
-                
-                            
-            ></TimeserieLinearGraph>
-            
-        </div>
-        <div style="width: 100px"> 
-          Rendement potentiel: XX Qt/ha
-        </div>
+        <TimeserieLinearGraph
+            v-if="matiereSecheSimulationTheorique.length >= 2"
+            :data="matiereSecheSimulationTheorique"
+            id="matiereSeche"
+            :x-name="date"
+            :yAxis="{label:{text: 'Matière sèche (g/cm2)',position: 'outer-center'}}"
+          ></TimeserieLinearGraph>
       </div>
       <div class="lane">
-        
+        Rendement potentiel (Qt/ha)
+      </div>
+      <div class="lane">
+        <TimeserieLinearGraph
+            v-if="rendementSimulationTheorique.length >= 2"
+            :data="rendementSimulationTheorique"
+            id="rendement"
+            :x-name="date"
+            :yAxis="{label:{text: '(Qt/ha)',position: 'outer-center'}}"
+        ></TimeserieLinearGraph>
       </div>
       <div class="lane">
         Risque climatique
       </div>
       <div class="lane">
-        <GraphProba></GraphProba>
+        <TimeserieLinearGraph
+            v-if="eauSecheresseProbaAlea.length >= 2"
+            :data="eauSecheresseProbaAlea"
+            id="probaAlea"
+            :x-name="date"
+            :grid="{y: {lines: [{value: '0.42' , text: 'Seuil de confiance'}]}}"
+            :data-regions="dataRegionsProbaAlea"
+            :yAxis="{label:{text: 'Probabilité',position: 'outer-center'}}"
+        ></TimeserieLinearGraph>
       </div>
     </div>
   </div>
 
   <div class="box" id="paramScenario">
     <div class="header">
-      Simulation des aléas climatiques 
+      Simulation des aléas climatiques
     </div>
     <div class="content">
       <div class="lane">
@@ -203,9 +212,6 @@
                 <h2>Edition aléa</h2>
               </template>
               <slot>
-                <div class="header" width='50px'>
-                  Aléa
-                </div>
                 <div class="lane">
                   <div>
                     <label for="aleaType">Aléa</label>
@@ -216,8 +222,6 @@
                         v-model="selectedAlea.type"
                     />
                   </div>
-                </div>
-                <div>
                 </div>
                 <div class="lane">
                   <div>
@@ -230,17 +234,10 @@
                                min="0" max="2" />
                   </div>
                 </div>
-                <div>
-                </div>
                 <div class="lane">
                   <div>
                     <label for="periode">Période</label>
-                    <va-date-picker 
-                      id="periode" 
-                      start-year="2000" 
-                      end-year="2050" 
-                      mode="range" 
-                      v-model="selectedAlea.periode" />
+                    <va-date-picker id="periode" start-year="2000" end-year="2000" mode="range" v-model="selectedAlea.periode" />
                   </div>
                 </div>
               </slot>
@@ -294,6 +291,9 @@
             :data="matiereSecheSimulationScenarioPlusTheorique"
             id="matiereSecheSimulation"
             :x-name="date"
+            :grid="gridMatiereSecheSimulationScenarioPlusTheorique"
+            :regions="regionsMatiereSecheSimulationScenarioPlusTheorique"
+            :zoom="false"
         ></TimeserieLinearGraph>
       </div>
       <div class="lane">
@@ -302,33 +302,11 @@
   </div>
 
   <div class="box">
-    <div class="content">
-      <GraphBiomasse></GraphBiomasse>
-    </div>
-  </div>
-
-  <div class="box">
-    <div class="content">
-      <GraphRendement></GraphRendement>
-    </div>
-  </div>
-
-  <div class="box">
-    <div class="content">
-      <GraphMarge></GraphMarge>
-    </div>
-  </div>
-
-
-  <div class="box">
     <div class="header">
       debug
     </div>
     <div class="content">
-      {{ formValues }}
-    </div>
-    <div class="content">
-      {{ scenarios }}
+      {{ eauSecheresseProbaAlea }}
     </div>
   </div>
 
@@ -366,12 +344,11 @@ export default defineComponent({
     const apiService = useApiService();
 
     const solTypes = [...Array(3).keys()].map(v => `sol_${v+1}`);
-    const aleaTypes = ['Sécheresse', 'Thermique', 'Grèle'];
+    const aleaTypes = ['Sécheresse', 'Eeau'];
 
     const aleaIcones = {
       'Sécheresse': { icon: 'local_fire_department', color:'#ec660e'},
-      'Thermique': { icon: 'thermostat', color: '#d50f0f'},
-      'Grèle': { icon: 'grain', color: '#7fdbff'},
+      'Eau': { icon: 'water', color: '#7fdbff'},
     };
 
     const ConfigIcones = {
@@ -394,7 +371,7 @@ export default defineComponent({
       tempOptimale: {min: 10, max: 15, default: 30},
       prixDeVente: {min: 5, max: 13, default: 20},
       coutAssurance: {min: 1000, max: 1500, default: 2000},
-      annee: {min:2011, max:2050, default:2014}
+      annee: {min:2011, max:2050, default:2023}
     };
 
 
@@ -408,8 +385,8 @@ export default defineComponent({
     const defaultScenarios: Scenari[] = [
         { "nom": "Scénario 1",
           "aleas": [
-            { "type": "Grèle", "intensite": 1 , periode: { start: new Date() }},
-            { "type": "Sécheresse", "intensite": 0 , periode: { start: new Date(), end: new Date() } }
+            { "type": "Eau", "intensite": 1 , periode: { start: new Date(2023,5,5), end: new Date(2023,5,8) }},
+            { "type": "Sécheresse", "intensite": 0 , periode: { start: new Date(2023,7,5), end: new Date(2023,7,29) } }
           ]
         }
     ];
@@ -477,14 +454,51 @@ export default defineComponent({
       matiereSecheSimulationScenarioPlusTheorique.value = [dataSimulationScenario.value["date"], renamedDataSimulationScenario, dataSimulationTheorique.value["matiereSeche"]];
 
       maxRendementSimulationScenario.value = Math.max(...(dataSimulationScenario.value["rendement"].slice(1)));
-
     };
     querySimulationTheorique()
         .then( () => {
       querySimulationScenario();
     });
 
+    const gridMatiereSecheSimulationScenarioPlusTheorique = ref({
+      x: {},
+      y: {}
+    } as any);
+    const regionsMatiereSecheSimulationScenarioPlusTheorique = ref([] as any[]);
+    const computeAleaChart =  (scenario: Scenari) => {
 
+      scenario.aleas.forEach( alea => {
+        if ( alea.periode?.start ){
+            gridMatiereSecheSimulationScenarioPlusTheorique.value.x.lines = gridMatiereSecheSimulationScenarioPlusTheorique.value.x.lines || [];
+          gridMatiereSecheSimulationScenarioPlusTheorique.value.x.lines.push(
+              {value: dateService.formatToIsoLocalDate(alea.periode.start), text: alea.type}
+          );
+          if ( alea.periode.end ) {
+            regionsMatiereSecheSimulationScenarioPlusTheorique.value.push({
+              start: dateService.formatToIsoLocalDate(alea.periode.start),
+              end: dateService.formatToIsoLocalDate(alea.periode.end),
+              class: alea.type
+            });
+          }
+        }
+      })
+    };
+    scenarios.forEach(scenari => computeAleaChart(scenari as Scenari));
+
+    const dataProbaAlea = ref({} as any);
+    const eauSecheresseProbaAlea =  ref([] as any[]);
+    const dataRegionsProbaAlea = ref({} as any);
+    const queryProbaAlea = async () => {
+      const startDate = new Date(formValues.annee, 0, 1);
+      const rawProbaAlea = await apiService.getDatedRendement(startDate,
+          await apiService.getProbaAlea((formValues as any).lieu, (formValues as any).annee));
+      console.log(rawProbaAlea);
+      const flattenedChartData = apiService.flattenAsChartData(rawProbaAlea as any);
+      flattenedChartData.forEach( data => dataProbaAlea.value[data[0]] = data);
+      eauSecheresseProbaAlea.value = [dataProbaAlea.value["date"], dataProbaAlea.value['eau'], dataProbaAlea.value['secheresse']];
+
+    };
+    queryProbaAlea();
 
     return {
       configRanges,
@@ -504,7 +518,10 @@ export default defineComponent({
       rendementSimulationTheorique,
       matiereSecheSimulationScenarioPlusTheorique,
       maxRendementSimulationScenario,
-      maxRendementSimulationTheorique
+      maxRendementSimulationTheorique,
+      regionsMatiereSecheSimulationScenarioPlusTheorique,
+      gridMatiereSecheSimulationScenarioPlusTheorique,
+      eauSecheresseProbaAlea
     }
   }
 });

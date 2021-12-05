@@ -18,10 +18,10 @@ async function getSimulationTheorique(): Promise<Rendement[]>{
   }
 }
 
-async function getProbaAlea(commune: string, annee: Date){
-  const codeCommune = commune.match(/\(\d+\)/);
-  debugger;
-  return (await axios.get(`/api/alea/${codeCommune}/${annee.getFullYear()}`))
+async function getProbaAlea(commune: string, annee: string){
+  const codeCommune: string = (commune.match(/\(\d+\)/) as string[])[0].replace('(', '').replace(')', '');
+
+  return (await axios.get(`/api/alea/${codeCommune}/${annee}`)).data;
 }
 
 async function getSimulationScenario(): Promise<Rendement[]>{
@@ -60,7 +60,7 @@ export function useApiService() {
     getSimulationTheorique,
     getDatedRendement,
     flattenAsChartData,
-    getSimulationScenario
-
+    getSimulationScenario,
+    getProbaAlea
   }
 }

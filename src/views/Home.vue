@@ -5,6 +5,8 @@
         Paramètres de la culture
     </div>
 
+    <va-divider class="header-underline"></va-divider>
+
     <div class="content">
       <div class="lane">
         <div>
@@ -34,6 +36,7 @@
           <div class="lane">
             Données culture
           </div>
+          <va-divider class="header-underline"></va-divider>
           <div class="lane">
             <div>
               <label for="espece">Espèce</label>
@@ -95,11 +98,14 @@
 
         </div> <!-- FIN COLONNE CONTENANT DONNEES PLANTE-->
 
-        <div> <!-- CREATION DE LA COLONNE CONTENANT DONNEES SOL-->
+        <div class="subbox"> <!-- CREATION DE LA COLONNE CONTENANT DONNEES SOL-->
           <div class="lane">
             Données sol
           </div>
-          <div class="lane" style="height: 200px;">
+
+          <va-divider class="header-underline"></va-divider>
+
+          <div class="lane" style="height: 200px; align-items: center">
             <label for="epSol">Epaisseur de sol C0 (mm) - min:{{ configRanges.epSol.min}} - max:{{ configRanges.epSol.max}}</label>
 
             <va-slider v-model="formValues.epSol" vertical color="#976318"
@@ -108,16 +114,9 @@
                 :max="configRanges.epSol.max"
                 track-label-visible
               >
-              <template #prepend>
-                <va-input type="number" v-model="formValues.epSol"></va-input>
-              </template>
             </va-slider>
-
-
-
-
           </div>
-          <div class="lane" style="height: 150px;">
+          <div class="lane" style="height: 150px; align-items: center">
             <label for="reserveUtileEau">Réserve utile en eau Maximum (mm)</label>
             <va-slider
                 v-model="formValues.reserveUtileEau"
@@ -142,6 +141,7 @@
     <div class="header">
       Développement de la plante
     </div>
+    <va-divider class="header-underline"></va-divider>
     <div class="content">
       <div class="lane">
         Evolution potentielle de la biomasse
@@ -188,15 +188,14 @@
     <div class="header">
       Simulation des aléas climatiques
     </div>
+    <va-divider class="header-underline"></va-divider>
     <div class="content">
-      <div class="lane">
-        <va-button-group outline>
+      <div class="lane" style="justify-content: center">
+        <va-button :disabled="true" icon="remove_circle_outline"></va-button>
+        <va-button-group style="margin-left: 15px;margin-right: 15px;" outline>
           <va-button v-for="scenari in scenarios" @click="formValues.selectedScenario = scenari"> {{ scenari.nom }}</va-button>
         </va-button-group>
-      </div>
-      <div class="lane" length="100px">
-        <va-button @click="pushNewScenario()" :disabled="scenarios.length > 4" icon="add_circle_outline"></va-button>
-        <va-button @click="deleteNewScenario()" :disabled="scenarios.length > 4" icon="remove_circle_outline"></va-button>
+        <va-button :disabled="true" icon="add_circle_outline"></va-button>
       </div>
 
       <div class="lane">
@@ -286,6 +285,7 @@
     <div class="header">
       Evolution de la biomasse
     </div>
+    <va-divider class="header-underline"></va-divider>
     <div class="content">
       <div class="lane">
         <TimeserieLinearGraph
@@ -296,6 +296,7 @@
             :grid="gridMatiereSecheSimulationScenarioPlusTheorique"
             :regions="regionsMatiereSecheSimulationScenarioPlusTheorique"
             :zoom="false"
+            :watcher="false"
         ></TimeserieLinearGraph>
       </div>
       <div class="lane">
@@ -306,7 +307,6 @@
       </div>
     </div>
   </div>
-
 
 </template>
 
@@ -320,6 +320,7 @@ import { useDateService } from "@/services/date.service";
 import {useApiService} from "@/services/api.service";
 import TimeserieLinearGraph from "@/components/TimeserieLinearGraph.vue";
 import GaugeRatio from "@/components/GaugeRatio.vue";
+import {debounce} from "lodash";
 
 export default defineComponent({
   name: 'Home',
@@ -433,7 +434,7 @@ export default defineComponent({
       flattenedChartData.forEach( data => dataSimulationTheorique.value[data[0]] = data);
 
 
-      matiereSecheSimulationTheorique.value = [dataSimulationTheorique.value["date"], dataSimulationTheorique.value["matiereSecheTheorique"]];
+      matiereSecheSimulationTheorique.value = [dataSimulationTheorique.value["date"], dataSimulationTheorique.value["matiereSeche"]];
 
       rendementSimulationTheorique.value = [dataSimulationTheorique.value["date"], dataSimulationTheorique.value["rendement"]];
 
@@ -494,7 +495,6 @@ export default defineComponent({
       const startDate = new Date(formValues.annee, 0, 1);
       const rawProbaAlea = await apiService.getDatedRendement(startDate,
           await apiService.getProbaAlea((formValues as any).lieu, (formValues as any).annee));
-      console.log(rawProbaAlea);
       const flattenedChartData = apiService.flattenAsChartData(rawProbaAlea as any);
       flattenedChartData.forEach( data => dataProbaAlea.value[data[0]] = data);
       eauSecheresseProbaAlea.value = [dataProbaAlea.value["date"], dataProbaAlea.value['eau'], dataProbaAlea.value['secheresse']];
@@ -502,14 +502,15 @@ export default defineComponent({
     };
     queryProbaAlea();
 
-    watch(formValues, () => {
-      console.log("changed !!");
-      querySimulationTheorique()
-          .then( () => {
-            querySimulationScenario();
-          });
-      queryProbaAlea();
-    });
+    watch(formValues, debounce( () => {
+        console.log("changed vue");
+        querySimulationTheorique()
+            .then( () => {
+              querySimulationScenario();
+            });
+        queryProbaAlea();
+      }, 500)
+    );
 
     return {
       configRanges,

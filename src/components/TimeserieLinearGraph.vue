@@ -5,7 +5,7 @@
 
 <script lang="ts">
 
-import {defineComponent, onMounted, PropType} from 'vue';
+import {defineComponent, onMounted, PropType, watch} from 'vue';
 import { useDateService } from "@/services/date.service";
 import * as c3 from "c3";
 
@@ -37,20 +37,25 @@ export default defineComponent({
     zoom: {
       type: Boolean,
       default: true
+    },
+    watcher: {
+      type: Boolean,
+      default: true
     }
   },
-  setup: ({id, data , xName, grid, regions, dataRegions, yAxis, zoom}) => {
+  setup: (props) => {
 
     const dateService = useDateService();
 
-    onMounted( async () => {
+    let chart: c3.ChartAPI;
 
-      var chart = c3.generate({
-        bindto: `#${id}`,
+    const generateChart = () => {
+      return c3.generate({
+        bindto: `#${props.id}`,
         data: {
-          x: xName,
-          columns: data,
-          regions: dataRegions as any,
+          x: props.xName,
+          columns: props.data,
+          regions: props.dataRegions as any,
         },
         axis: {
           x: {
@@ -60,25 +65,36 @@ export default defineComponent({
               count: 12
             }
           },
-          y: yAxis as any
+          y: props.yAxis as any
 
         },
 
         legend:{
           show:false
         },
-        grid: grid,
-        regions: regions,
+        grid: props.grid,
+        regions: props.regions,
         point: {
           show: false
         },
         zoom: {
-          enabled: zoom
+          enabled: props.zoom
         }
 
-      }
-    );
-  })
+      });
+    };
+
+    onMounted( async () => {
+      chart = generateChart();
+    });
+    if ( props.watcher ){
+      watch( () => props.data, () => {
+        console.log("changed IN GRAPH")
+        chart.destroy();
+        setTimeout( () => { chart = generateChart()}, 300);
+      });
+    }
+
 }
 });
 

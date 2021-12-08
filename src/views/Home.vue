@@ -152,6 +152,7 @@
             :data="matiereSecheSimulationTheorique"
             id="matiereSeche"
             :x-name="date"
+            :zoom="false"
             :yAxis="{label:{text: 'Matière sèche (g/cm2)',position: 'outer-center'}}"
           ></TimeserieLinearGraph>
       </div>
@@ -164,6 +165,7 @@
             :data="rendementSimulationTheorique"
             id="rendement"
             :x-name="date"
+            :zoom="false"
             :yAxis="{label:{text: '(Qt/ha)',position: 'outer-center'}}"
         ></TimeserieLinearGraph>
       </div>
@@ -177,7 +179,6 @@
             id="probaAlea"
             :x-name="date"
             :grid="{y: {lines: [{value: '0.42' , text: 'Seuil de confiance'}]}}"
-            :data-regions="dataRegionsProbaAlea"
             :yAxis="{label:{text: 'Probabilité',position: 'outer-center'}}"
         ></TimeserieLinearGraph>
       </div>
@@ -207,7 +208,6 @@
                 v-if="selectedAlea"
                 v-model="selectedAlea"
                 hide-default-actions
-                :close="() => selectedAlea = null"
             >
               <template #header>
                 <h2>Edition aléa</h2>
@@ -238,7 +238,13 @@
                 <div class="lane">
                   <div>
                     <label for="periode">Période</label>
-                    <va-date-picker id="periode" start-year="2000" end-year="2000" mode="range" v-model="selectedAlea.periode" />
+                    <va-date-picker id="periode"
+                                    :start-year="formValues.annee"
+                                    :end-year="formValues.annee+1"
+                                    mode="range"
+
+                                    v-model:view="datePickerMonthView"
+                                    v-model="selectedAlea.periode" />
                   </div>
                 </div>
               </slot>
@@ -296,7 +302,7 @@
             :grid="gridMatiereSecheSimulationScenarioPlusTheorique"
             :regions="regionsMatiereSecheSimulationScenarioPlusTheorique"
             :zoom="false"
-            :watcher="false"
+            :force-full-reload="true"
         ></TimeserieLinearGraph>
       </div>
       <div class="lane">
@@ -345,7 +351,7 @@ export default defineComponent({
     const apiService = useApiService();
 
     const solTypes = [...Array(3).keys()].map(v => `sol_${v+1}`);
-    const aleaTypes = ['Sécheresse', 'Eeau'];
+    const aleaTypes = ['Sécheresse', 'Eau'];
 
     const aleaIcones = {
       'Sécheresse': { icon: 'local_fire_department', color:'#ec660e'},
@@ -470,27 +476,34 @@ export default defineComponent({
     const regionsMatiereSecheSimulationScenarioPlusTheorique = ref([] as any[]);
     const computeAleaChart =  (scenario: Scenari) => {
 
+      const gridConfig = {
+        x: {} as any,
+        y: {} as any
+      };
+      const regionConfig = [] as any;
       scenario.aleas.forEach( alea => {
+        console.log("alea periode", alea.periode)
         if ( alea.periode?.start ){
-            gridMatiereSecheSimulationScenarioPlusTheorique.value.x.lines = gridMatiereSecheSimulationScenarioPlusTheorique.value.x.lines || [];
-          gridMatiereSecheSimulationScenarioPlusTheorique.value.x.lines.push(
-              {value: dateService.formatToIsoLocalDate(alea.periode.start), text: alea.type}
+          gridConfig.x.lines = gridConfig.x.lines || [];
+          gridConfig.x.lines.push(
+              {value: dateService.formatToIsoLocalDate(alea.periode.start), text: alea.type, class: alea.type}
           );
           if ( alea.periode.end ) {
-            regionsMatiereSecheSimulationScenarioPlusTheorique.value.push({
+            regionConfig.push({
               start: dateService.formatToIsoLocalDate(alea.periode.start),
               end: dateService.formatToIsoLocalDate(alea.periode.end),
               class: alea.type
             });
           }
         }
-      })
+      });
+      gridMatiereSecheSimulationScenarioPlusTheorique.value = gridConfig;
+      regionsMatiereSecheSimulationScenarioPlusTheorique.value = regionConfig;
     };
     scenarios.forEach(scenari => computeAleaChart(scenari as Scenari));
 
     const dataProbaAlea = ref({} as any);
     const eauSecheresseProbaAlea =  ref([] as any[]);
-    const dataRegionsProbaAlea = ref({} as any);
     const queryProbaAlea = async () => {
       const startDate = new Date(formValues.annee, 0, 1);
       const rawProbaAlea = await apiService.getDatedRendement(startDate,
@@ -502,11 +515,17 @@ export default defineComponent({
     };
     queryProbaAlea();
 
-    watch(formValues, debounce( () => {
-        console.log("changed vue");
+    watch(formValues, debounce( async () => {
         queryProbaAlea();
+        await querySimulationTheorique();
       }, 500)
     );
+
+    watch(scenarios, debounce( async () => {
+      console.log("SCENARIO",scenarios)
+      await querySimulationScenario();
+      scenarios.forEach(scenari => computeAleaChart(scenari as Scenari));
+    }, 500));
 
     return {
       configRanges,
@@ -529,7 +548,8 @@ export default defineComponent({
       maxRendementSimulationTheorique,
       regionsMatiereSecheSimulationScenarioPlusTheorique,
       gridMatiereSecheSimulationScenarioPlusTheorique,
-      eauSecheresseProbaAlea
+      eauSecheresseProbaAlea,
+      datePickerMonthView: { year: formValues.annee }
     }
   }
 });

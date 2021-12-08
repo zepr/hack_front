@@ -5,7 +5,7 @@
 
 <script lang="ts">
 
-import {defineComponent, onMounted, PropType, watch} from 'vue';
+import {defineComponent, onMounted, PropType, ref, watch} from 'vue';
 import { useDateService } from "@/services/date.service";
 import * as c3 from "c3";
 
@@ -41,6 +41,10 @@ export default defineComponent({
     watcher: {
       type: Boolean,
       default: true
+    },
+    forceFullReload: {
+      type: Boolean,
+      default: false
     }
   },
   setup: (props) => {
@@ -84,17 +88,25 @@ export default defineComponent({
       });
     };
 
+    if ( props.watcher ){
+      watch( () => props.data, () => {
+        if ( ! props.forceFullReload ) {
+          chart.load({
+            columns: props.data
+          });
+        }else {
+          // TODO should find a better way to update regions and xgrides ...
+          chart?.destroy();
+          console.log(props.regions);
+          setTimeout( () => { chart = generateChart() }, 500);
+        }
+
+      });
+    }
+
     onMounted( async () => {
       chart = generateChart();
     });
-    if ( props.watcher ){
-      watch( () => props.data, () => {
-        console.log("changed IN GRAPH");
-        chart.load({
-          columns: props.data
-        });
-      });
-    }
 
 }
 });

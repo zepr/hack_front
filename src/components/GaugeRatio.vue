@@ -3,7 +3,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, onMounted} from "vue";
+import {defineComponent, onMounted, watch} from "vue";
 import * as c3 from "c3";
 export default defineComponent({
   name: "GaugeRatio",
@@ -17,14 +17,17 @@ export default defineComponent({
       default: 0
     }
   },
-  setup: ({expected, actual}) => {
+  setup: (props) => {
+
+    const buildColumns = () : any => {
+      return [['perte de rendement (%)', Math.max(0, (1 - props.actual / props.expected) * 100)]];
+    }
+    let chart: c3.ChartAPI;
     onMounted( () => {
-      let chart = c3.generate({
+      chart = c3.generate({
         bindto: `#gaugeRatio`,
         data: {
-          columns: [
-            ['perte de rendement (%)', Math.max(0, actual / expected * 100)]
-          ],
+          columns: buildColumns(),
           type: 'gauge',
         },
         color: {
@@ -35,6 +38,12 @@ export default defineComponent({
         }
       })
     });
+
+    watch( () => [props.actual, props.expected] , () => {
+      chart?.load({
+        columns: buildColumns()
+      });
+    })
   }
 });
 </script>

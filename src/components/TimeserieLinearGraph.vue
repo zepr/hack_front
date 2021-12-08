@@ -89,9 +89,10 @@ export default defineComponent({
     });
     if ( props.watcher ){
       watch( () => props.data, () => {
-        console.log("changed IN GRAPH")
-        chart.destroy();
-        setTimeout( () => { chart = generateChart()}, 300);
+        console.log("changed IN GRAPH");
+        chart.load({
+          columns: props.data
+        });
       });
     }
 

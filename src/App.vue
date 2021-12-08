@@ -26,6 +26,7 @@ body {
 .subbox {
   border: solid 2px lightgrey;
   padding: 20px;
+  margin-bottom: 20px;
 }
 
 .shadowed {
@@ -66,19 +67,20 @@ body {
     font-size: x-large;
     margin-bottom: 30px
   }
-
-  .lane {
-      display: flex;
-      justify-content: space-around;
-      align-items: flex-start;
-      margin-bottom: 30px;
-      .va-slider {
-        width: 100%;
-        margin-top: 15px;
-      }
-    }
 }
 
+
+.lane {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: flex-start;
+  margin-bottom: 30px;
+  .va-slider {
+    width: 100%;
+    margin-top: 15px;
+  }
+}
 
 
 </style>

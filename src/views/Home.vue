@@ -210,34 +210,39 @@
                 hide-default-actions
             >
               <template #header>
-                <h2>Edition aléa</h2>
+                <div class="lane">
+                  <h1>Edition aléa</h1>
+                </div>
+                <va-divider class="header-underline"></va-divider>
               </template>
               <slot>
-                <div class="lane">
-                  <div>
-                    <label for="aleaType">Aléa</label>
-                    <va-option-list
-                        id="aleaType"
-                        type="radio"
-                        :options="aleaTypes"
-                        v-model="selectedAlea.type"
-                    />
-                  </div>
+                <div>
+                  <va-option-list
+                      id="aleaType"
+                      type="radio"
+                      :options="aleaTypes"
+                      v-model="selectedAlea.type"
+                  />
                 </div>
+
                 <div class="lane">
-                  <div>
-                    <label for="aleaIntensity">Intensité</label>
-                    <va-slider id="aleaIntensity"
-                               :label="intensiteTypes[selectedAlea.intensite].label"
-                               :label-color="intensiteTypes[selectedAlea.intensite].color"
-                               :color="intensiteTypes[selectedAlea.intensite].color"
-                               v-model="selectedAlea.intensite"
-                               min="0" max="2" />
-                  </div>
+                  <label for="aleaIntensity">Intensité</label>
+                  <va-slider id="aleaIntensity"
+                             :label="intensiteTypes[selectedAlea.intensite].label"
+                             :label-color="intensiteTypes[selectedAlea.intensite].color"
+                             :color="intensiteTypes[selectedAlea.intensite].color"
+                             v-model="selectedAlea.intensite"
+                             min="0" max="2" />
                 </div>
+
+
                 <div class="lane">
+
                   <div>
-                    <label for="periode">Période</label>
+                    <div class="lane">
+                      <label>Période</label>
+                    </div>
+
                     <va-date-picker id="periode"
                                     :start-year="formValues.annee"
                                     :end-year="formValues.annee+1"
@@ -246,40 +251,51 @@
                                     v-model:view="datePickerMonthView"
                                     v-model="selectedAlea.periode" />
                   </div>
+
                 </div>
               </slot>
             </va-modal>
 
             <va-list-label>
-              Aléas <va-button icon="add_circle_outline" @click="pushAlea(formValues.selectedScenario)"></va-button>
+              <span style="font-size: large;">Aléas</span>
             </va-list-label>
 
-            <va-list-item
-                v-for="(alea, aleaIndex) in formValues.selectedScenario.aleas"
-                :key="aleaIndex"
-                @click="selectedAlea = alea"
-            >
-              <va-list-item-section avatar>
-                <va-icon
-                    :name="aleaIcones[alea.type].icon"
-                    :color="aleaIcones[alea.type].color"
-                />
-              </va-list-item-section>
+            <div class="subbox">
+              <va-list-item
+                  v-for="(alea, aleaIndex) in formValues.selectedScenario.aleas"
+                  :key="aleaIndex"
+              >
+                <va-list-item-section avatar>
+                  <va-icon
+                      :name="aleaIcones[alea.type].icon"
+                      :color="aleaIcones[alea.type].color"
+                  />
+                </va-list-item-section>
 
-              <va-list-item-section>
-                <va-list-item-label>
-                  {{ alea.type }}
-                </va-list-item-label>
+                <va-list-item-section
+                    @click="selectedAlea = alea">
+                  <va-list-item-label>
+                    {{ alea.type }}
+                  </va-list-item-label>
 
-                <va-list-item-label caption>
-                  {{ dateService.formatToRelativeFrLocalDate(alea?.periode?.start) }}<span v-if="alea?.periode?.end"> - {{ dateService.formatToRelativeFrLocalDate(alea.periode?.end) }}</span>
-                </va-list-item-label>
-              </va-list-item-section>
+                  <va-list-item-label caption>
+                    {{ dateService.formatToRelativeFrLocalDate(alea?.periode?.start) }}<span v-if="alea?.periode?.end"> - {{ dateService.formatToRelativeFrLocalDate(alea.periode?.end) }}</span>
+                  </va-list-item-label>
+                </va-list-item-section>
 
-              <va-list-item-section icon>
-                <va-icon @click='formValues.selectedScenario.aleas.splice(aleaIndex, 1)' name="remove_circle_outline" color="danger" ></va-icon>
-              </va-list-item-section>
-            </va-list-item>
+                <va-list-item-section icon>
+                  <va-icon @click='formValues.selectedScenario.aleas.splice(aleaIndex, 1)' name="remove_circle_outline" color="danger" ></va-icon>
+                </va-list-item-section>
+              </va-list-item>
+              <va-list-item>
+                <va-list-item-section>
+                  <va-list-item-label>
+                    <va-button icon="add_circle_outline" @click="pushAlea(formValues.selectedScenario)"></va-button>
+                  </va-list-item-label>
+                </va-list-item-section>
+              </va-list-item>
+            </div>
+
           </va-list>
         </div>
 
@@ -557,6 +573,12 @@ export default defineComponent({
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+.va-modal {
+  label{
+    text-align: center;
+  }
+
+}
 
 h3 {
   margin: 40px 0 0;

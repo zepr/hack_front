@@ -9,16 +9,20 @@ async function findVille(criteria: string): Promise<string[]>{
   return (await axios.get('/api/find/'+criteria)).data;
 }
 
-async function getSimulationScenario(aleas: any[]): Promise<Rendement[]>{
-  let params = "";
-  aleas.forEach(alea => {
-    const formatedStart = dateService.formatToIsoLocalDate(alea.periode.start);
-    const formatedEnd = dateService.formatToIsoLocalDate(alea.periode.end);
-    params+=`/${formatedStart}/${formatedEnd}/${alea.intensite}`;
+async function postSimationScenarios(aleas: any[]): Promise<Rendement[]> {
+  type aleaInput = {type: string, firstDay: string, lastDay: string, intensity: number};
+  const postPayload: aleaInput[] = aleas.map(alea => {
+    return {
+      firstDay: dateService.formatToIsoLocalDate(alea.periode.start),
+      lastDay: dateService.formatToIsoLocalDate(alea.periode.end),
+      intensity: alea.intensite,
+      type: alea.type
+    }
   });
 
-  return (await axios.get(`/api/model${params}`)).data;
+  return (await axios.post(`/api/model`, postPayload)).data;
 }
+
 
 async function getProbaAlea(commune: string, annee: string){
   const codeCommune: string = (commune.match(/\(\d+\)/) as string[])[0].replace('(', '').replace(')', '');
@@ -61,7 +65,7 @@ export function useApiService() {
     getSimulationTheorique,
     getDatedRendement,
     flattenAsChartData,
-    getSimulationScenario,
+    postSimationScenarios,
     getProbaAlea
   }
 }

@@ -471,7 +471,7 @@ export default defineComponent({
     const querySimulationScenario = async () => {
       const startDate = new Date(formValues.annee, 0, 1);
       const rawSimulationData = apiService.getDatedRendement(startDate,
-          await apiService.getSimulationScenario((formValues.selectedScenario as Scenari).aleas));
+          await apiService.postSimationScenarios((formValues.selectedScenario as Scenari).aleas));
       const flattenedChartData = apiService.flattenAsChartData(rawSimulationData);
       flattenedChartData.forEach( data => dataSimulationScenario.value[data[0]] = data);
 

@@ -1,7 +1,10 @@
 
 
+
+
 function formatToIsoLocalDate( date: Date): string{
-  return date ? `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}` : '';
+  const pad2 = (n: number) => String(n).padStart(2,'0');
+  return date ? `${date.getFullYear()}-${pad2(date.getMonth()+1)}-${pad2(date.getDate())}` : '';
 }
 
 function formatToFrLocalDate( date: Date): string{
